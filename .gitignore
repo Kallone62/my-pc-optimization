@@ -1,9 +1,11 @@
-# Runtime logs produced beside the launchers
+# Runtime logs, state and downloaded files: never commit personal system data
+/Downloads/
+/Logs/
+/State/
+/Work/
+PostFormat-Logs/
 Run_CS2_Gaming_Scripts-debug.log
 Run_PostFormat_Apps-debug.log
-PostFormat-Logs/
-
-# Generic local/runtime logs
 *.log
 
 # Windows metadata
