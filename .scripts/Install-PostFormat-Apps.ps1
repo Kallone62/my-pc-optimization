@@ -3,7 +3,10 @@ param([switch]$Preview)
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$logDir = Join-Path $root 'PostFormat-Logs'
+$logDir = Join-Path $root 'Logs\PostFormat'
+$downloadDir = Join-Path $root 'Downloads\Apps'
+$workDir = Join-Path $root 'Work\PostFormat'
+$stateDir = Join-Path $root 'State\PostFormat'
 $started = Get-Date
 $report = Join-Path $logDir ('report-{0}.txt' -f $started.ToString('yyyyMMdd-HHmmss'))
 $records = New-Object System.Collections.Generic.List[string]
@@ -12,7 +15,7 @@ $currentStep = ''
 $index = 0
 $isElevated = $false
 $directXPackageVersion = '9.29.1974.1'
-$directXStateDir = Join-Path $env:LOCALAPPDATA 'PostFormat-Apps'
+$directXStateDir = $stateDir
 $directXStateFile = Join-Path $directXStateDir 'directx-june2010-state.json'
 
 $steps = @(
@@ -391,8 +394,8 @@ function Invoke-DirectX {
         return
     }
 
-    $download = Join-Path $logDir 'directx_Jun2010_redist.exe'
-    $extract = Join-Path $logDir 'DirectX-extracted'
+    $download = Join-Path $downloadDir 'directx_Jun2010_redist.exe'
+    $extract = Join-Path $workDir 'DirectX-extracted'
     $uri = 'https://download.microsoft.com/download/8/4/a/84a35bf1-dafe-4ae8-82af-ad2ae20b6b14/directx_Jun2010_redist.exe'
 
     if (-not (Test-Path -LiteralPath $download -PathType Leaf)) {
@@ -562,7 +565,7 @@ function Invoke-TeamSpeakClean {
     $targetVersion = '3.6.2'
     $installerUrl = 'https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe'
     $expectedSha256 = 'EAB9E0C1A7134643E5F7116B7E0E58FAFFB20D6DB528F8B333D2C2B5D1AB68AE'
-    $installer = Join-Path $logDir 'TeamSpeak3-Client-win64-3.6.2.exe'
+    $installer = Join-Path $downloadDir 'TeamSpeak3-Client-win64-3.6.2.exe'
 
     $installedVersion = Get-TeamSpeakInstalledVersion
     if ($installedVersion -eq $targetVersion) {
@@ -677,7 +680,7 @@ function Invoke-ExitLag {
         return
     }
 
-    $localInstaller = Join-Path $root 'ExitLag-installer.exe'
+    $localInstaller = Join-Path $downloadDir 'ExitLag-installer.exe'
 
     if (-not (Test-Path -LiteralPath $localInstaller -PathType Leaf)) {
         Write-Host 'ExitLag is a manual/optional final step.'
@@ -998,7 +1001,9 @@ function Invoke-PeripheralSetupPages {
 }
 
 try {
-    New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+    foreach ($dir in @($logDir,$downloadDir,$workDir,$stateDir)) {
+        New-Item -ItemType Directory -Path $dir -Force | Out-Null
+    }
     if ($env:OS -ne 'Windows_NT') { throw 'This script requires Windows.' }
 
     $winget = Get-Command winget.exe -ErrorAction SilentlyContinue

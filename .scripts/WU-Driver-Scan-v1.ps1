@@ -11,8 +11,8 @@
     PostFormat-Policy-Baseline-v1.ps1 every other week while the PC is idle.
 
     Reports:
-      C:\ProgramData\GamingPolicyBaseline\WU-Driver-Scan\latest.txt
-      C:\ProgramData\GamingPolicyBaseline\WU-Driver-Scan\AVAILABLE.txt (only when results exist)
+      <SSD Setup>\Logs\WU-Driver-Scan\latest.txt
+      <SSD Setup>\Logs\WU-Driver-Scan\AVAILABLE.txt (only when results exist)
       timestamped .txt and .json files
 
     Search criteria:
@@ -25,7 +25,8 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$Root = Join-Path $env:ProgramData 'GamingPolicyBaseline\WU-Driver-Scan'
+$PackRoot = Split-Path -Parent $PSScriptRoot
+$Root = Join-Path $PackRoot 'Logs\WU-Driver-Scan'
 New-Item -ItemType Directory -Path $Root -Force | Out-Null
 
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'

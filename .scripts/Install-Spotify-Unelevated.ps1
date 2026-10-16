@@ -5,6 +5,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$PackRoot = Split-Path -Parent $PSScriptRoot
+$DownloadRoot = Join-Path $PackRoot 'Downloads\Apps\Spotify'
+New-Item -ItemType Directory -Path $DownloadRoot -Force | Out-Null
 $outcome = @{ ExitCode = 1; Status = 'FAILED'; Detail = 'Spotify worker did not complete' }
 
 # WinGet HRESULTs observed as signed Int32 exit codes.
@@ -100,7 +103,7 @@ function Invoke-OfficialSpotifyFallback {
         $uri = 'https://download.scdn.co/SpotifyFullSetupX64.exe'
     }
 
-    $installer = Join-Path $env:TEMP ('PostFormat-Spotify-{0}.exe' -f [guid]::NewGuid().ToString('N'))
+    $installer = Join-Path $DownloadRoot 'SpotifyFullSetup.exe'
     try {
         Add-Content -LiteralPath $LogFile -Value ("[Spotify] WinGet manifest path unavailable; downloading official fallback: {0}" -f $uri)
         Invoke-WebRequest -Uri $uri -OutFile $installer -UseBasicParsing -ErrorAction Stop
@@ -125,7 +128,7 @@ function Invoke-OfficialSpotifyFallback {
         throw "Official Spotify installer finished with exit code $($process.ExitCode), but Spotify was not verified present within 120 seconds."
     }
     finally {
-        Remove-Item -LiteralPath $installer -Force -ErrorAction SilentlyContinue
+        # Keep the verified official installer under SSD Setup\Downloads for reproducibility/manual reuse.
     }
 }
 

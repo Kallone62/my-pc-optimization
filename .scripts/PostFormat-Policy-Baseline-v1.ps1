@@ -101,11 +101,12 @@ $ErrorActionPreference = 'Stop'
 
 $ScriptVersion = '1.2'
 $ScriptRoot = Split-Path -Parent $PSCommandPath
+$PackRoot = Split-Path -Parent $ScriptRoot
 
-$Root = Join-Path $env:ProgramData 'GamingPolicyBaseline'
-$LogRoot = Join-Path $Root 'Logs'
-$StableScanScript = Join-Path $Root 'WU-Driver-Scan-v1.ps1'
+$Root = Join-Path $PackRoot 'State\Policy'
+$LogRoot = Join-Path $PackRoot 'Logs\Policy'
 $SourceScanScript = Join-Path $ScriptRoot 'WU-Driver-Scan-v1.ps1'
+$StableScanScript = $SourceScanScript
 $LogFile = Join-Path $LogRoot ("policy-{0:yyyyMMdd-HHmmss}.log" -f (Get-Date))
 
 $TaskPath = '\GamingBaseline\'
@@ -260,7 +261,6 @@ function Install-DriverScanTask {
     }
 
     New-Item -ItemType Directory -Path $Root -Force | Out-Null
-    Copy-Item -LiteralPath $SourceScanScript -Destination $StableScanScript -Force
 
     $existing = Get-DriverScanTask
 
@@ -695,7 +695,7 @@ try {
     Write-Host ("Registry/task state: {0}" -f $(if ($verificationOk) { 'OK' } else { 'CHECK OUTPUT ABOVE' }))
     Write-Host ("Warnings           : {0}" -f $script:Warnings)
     Write-Host ("Log                : {0}" -f $LogFile)
-    Write-Host ("Driver scan reports: {0}" -f (Join-Path $env:ProgramData 'GamingPolicyBaseline\WU-Driver-Scan'))
+    Write-Host ("Driver scan reports: {0}" -f (Join-Path $PackRoot 'Logs\WU-Driver-Scan'))
 
     if ($null -ne $defender -and -not $defender.AllOk -and $defender.TamperProtected) {
         Write-Host ''

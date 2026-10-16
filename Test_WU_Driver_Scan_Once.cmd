@@ -14,7 +14,7 @@ set "RC=%ERRORLEVEL%"
 
 echo.
 echo Exit code: %RC%
-echo Report: C:\ProgramData\GamingPolicyBaseline\WU-Driver-Scan\latest.txt
+echo Report: %~dp0Logs\WU-Driver-Scan\latest.txt
 echo.
 pause
 exit /b %RC%

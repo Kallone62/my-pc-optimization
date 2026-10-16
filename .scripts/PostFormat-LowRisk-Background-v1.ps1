@@ -85,7 +85,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $ScriptVersion = '1.1'
-$LogRoot = Join-Path $env:ProgramData 'GamingLowRiskBackground\Logs'
+$PackRoot = Split-Path -Parent $PSScriptRoot
+$LogRoot = Join-Path $PackRoot 'Logs\Policy\Background'
 New-Item -ItemType Directory -Path $LogRoot -Force | Out-Null
 
 $LogFile = Join-Path $LogRoot ("low-risk-background-{0:yyyyMMdd-HHmmss}.log" -f (Get-Date))

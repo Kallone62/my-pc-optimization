@@ -84,7 +84,7 @@ echo Preflight       : %PREFLIGHT%
 echo Applications    : %APP_STATUS% ^(exit code: %APP_EXIT%^)
 echo Final exit code : %RESULT%
 echo Launcher log    : "%REPORT%"
-echo Detail logs     : "%PACK_ROOT%\PostFormat-Logs"
+echo Detail logs     : "%PACK_ROOT%\Logs\PostFormat"
 echo ============================================================
 echo.
 pause
