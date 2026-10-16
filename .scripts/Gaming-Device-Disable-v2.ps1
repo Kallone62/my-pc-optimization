@@ -58,11 +58,14 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$StateDir  = Join-Path $env:ProgramData 'GamingDeviceBaseline'
+$PackRoot  = Split-Path -Parent $PSScriptRoot
+$StateDir  = Join-Path $PackRoot 'State\Devices'
+$LogDir    = Join-Path $PackRoot 'Logs\Devices'
 $StateFile = Join-Path $StateDir 'disabled-devices-v2.json'
-$LogFile   = Join-Path $StateDir 'device-disable-v2.log'
+$LogFile   = Join-Path $LogDir 'device-disable-v2.log'
 
 New-Item -ItemType Directory -Path $StateDir -Force | Out-Null
+New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 
 function Write-Log {
     param([Parameter(Mandatory)][string]$Message)

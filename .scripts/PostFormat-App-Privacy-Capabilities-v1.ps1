@@ -79,8 +79,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $ScriptVersion = '1.1'
+$PackRoot = Split-Path -Parent $PSScriptRoot
 $PolicyPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy'
-$LogRoot = Join-Path $env:ProgramData 'GamingAppPrivacyBaseline\Logs'
+$LogRoot = Join-Path $PackRoot 'Logs\Policy\AppPrivacy'
 New-Item -ItemType Directory -Path $LogRoot -Force | Out-Null
 $LogFile = Join-Path $LogRoot ("app-privacy-{0:yyyyMMdd-HHmmss}.log" -f (Get-Date))
 

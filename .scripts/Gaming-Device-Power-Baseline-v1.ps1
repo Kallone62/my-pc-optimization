@@ -80,7 +80,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $ScriptVersion = '1.4'
-$LogRoot = Join-Path $env:ProgramData 'GamingDeviceBaseline\PowerBaseline'
+$PackRoot = Split-Path -Parent $PSScriptRoot
+$LogRoot = Join-Path $PackRoot 'Logs\Devices\PowerBaseline'
 New-Item -ItemType Directory -Path $LogRoot -Force | Out-Null
 $LogFile = Join-Path $LogRoot ("device-power-baseline-{0:yyyyMMdd-HHmmss}.log" -f (Get-Date))
 

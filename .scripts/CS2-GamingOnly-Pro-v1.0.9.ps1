@@ -289,7 +289,8 @@ function Assert-TargetEnvironment {
     Write-Host "Target  : $TargetWorkload (script v$ScriptVersion)"
 }
 
-$LogRoot = Join-Path $env:ProgramData 'GamingOnlyBaseline\Logs'
+$PackRoot = Split-Path -Parent $PSScriptRoot
+$LogRoot = Join-Path $PackRoot 'Logs\CS2'
 New-Item -ItemType Directory -Path $LogRoot -Force | Out-Null
 $LogFile = Join-Path $LogRoot ("apply-{0:yyyyMMdd-HHmmss}.log" -f (Get-Date))
 Start-Transcript -Path $LogFile -Force | Out-Null
@@ -402,7 +403,7 @@ function Set-DesktopWallpaperBlack {
 
     # Use a real 1x1 black BMP because the supported wallpaper policy requires
     # an image path. Lock only wallpaper changes; leave all other UI state alone.
-    $AssetRoot = Join-Path $env:ProgramData 'GamingOnlyBaseline\Assets'
+    $AssetRoot = Join-Path $PackRoot 'State\CS2\Assets'
     New-Item -ItemType Directory -Path $AssetRoot -Force -ErrorAction Stop | Out-Null
     $WallpaperPath = Join-Path $AssetRoot 'Desktop-Black.bmp'
     $BitmapBytes = [Convert]::FromBase64String(
@@ -550,7 +551,7 @@ function Remove-LegacyOpenPowerShellHereContextMenu {
         }
     }
 
-    $LegacyHelper = Join-Path $env:ProgramData 'GamingOnlyBaseline\OpenPowerShellHere.ps1'
+    $LegacyHelper = Join-Path $PackRoot 'State\CS2\OpenPowerShellHere.ps1'
     if (Test-Path -LiteralPath $LegacyHelper) {
         Remove-Item -LiteralPath $LegacyHelper -Force -ErrorAction Stop
         Write-Host "[APPLIED] Removed legacy PowerShell context-menu helper: $LegacyHelper"

@@ -59,14 +59,17 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$StateDir  = Join-Path $env:ProgramData 'GamingDeviceBaseline\BackgroundCleanup'
+$PackRoot  = Split-Path -Parent $PSScriptRoot
+$StateDir  = Join-Path $PackRoot 'State\Devices\BackgroundCleanup'
+$LogDir    = Join-Path $PackRoot 'Logs\Devices'
 $StateFile = Join-Path $StateDir 'background-cleanup-state.json'
-$LogFile   = Join-Path $StateDir 'background-cleanup.log'
+$LogFile   = Join-Path $LogDir 'background-cleanup.log'
 
 $EdgePolicyPath = 'HKLM:\SOFTWARE\Policies\Microsoft\EdgeUpdate'
 $EdgePolicyName = 'AutoUpdateCheckPeriodMinutes'
 
 New-Item -ItemType Directory -Path $StateDir -Force | Out-Null
+New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 
 function Write-Log {
     param([Parameter(Mandatory)][string]$Message)

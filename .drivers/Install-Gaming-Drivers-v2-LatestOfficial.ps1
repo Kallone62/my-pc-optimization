@@ -124,10 +124,11 @@ $AmdChipsetPage = 'https://www.amd.com/en/support/downloads/drivers.html/chipset
 $AmdIgpuPage = 'https://www.amd.com/en/support/downloads/drivers.html/processors/ryzen/ryzen-9000-series/amd-ryzen-7-9800x3d.html'
 $NvidiaLookupBase = 'https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/AjaxDriverService.php'
 
-$Root = Join-Path $env:ProgramData 'GamingDriverInstaller'
-$DownloadRoot = Join-Path $Root 'Downloads'
-$ExtractRoot = Join-Path $Root 'Extracted'
-$LogRoot = Join-Path $Root 'Logs'
+$PackRoot = Split-Path -Parent $ScriptRoot
+$Root = Join-Path $PackRoot 'State\Drivers'
+$DownloadRoot = Join-Path $PackRoot 'Downloads\Drivers'
+$ExtractRoot = Join-Path $PackRoot 'Work\Drivers\Extracted'
+$LogRoot = Join-Path $PackRoot 'Logs\Drivers'
 
 foreach ($dir in @($Root,$DownloadRoot,$ExtractRoot,$LogRoot)) {
     New-Item -ItemType Directory -Path $dir -Force | Out-Null
