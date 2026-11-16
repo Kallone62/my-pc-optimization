@@ -1,0 +1,159 @@
+name: Publish SSD Setup v0.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-ssd-setup-v0.1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ssd-setup-v0.1-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.repository == 'Kallone62/my-pc-optimization'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Assemble install-only ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="dist/SSD Setup"
+          mkdir -p "$ROOT/.drivers/Assets"
+          cp -a .bios "$ROOT/.bios"
+          cp -a .scripts "$ROOT/.scripts"
+          cp -a "After Game Update" "$ROOT/After Game Update"
+          cp -a Game "$ROOT/Game"
+          cp -a Keyboard "$ROOT/Keyboard"
+          cp -a Training "$ROOT/Training"
+          cp -a .drivers/Assets/Monitor "$ROOT/.drivers/Assets/Monitor"
+
+          cp .drivers/Download_Gaming_Drivers.cmd "$ROOT/.drivers/"
+          cp .drivers/Install-Gaming-Drivers-v2-LatestOfficial.ps1 "$ROOT/.drivers/"
+          cp Download_PostFormat_Apps.cmd "$ROOT/"
+          cp Run_CS2_Gaming_Scripts.cmd "$ROOT/"
+          cp DOWNLOAD_ONLY.md "$ROOT/"
+
+          cat > "$ROOT/INSTALL_README.txt" <<'INSTRUCTIONS'
+          SSD Setup v0.1 - Windows 11 / CS2 kurulum ve bakim paketi
+          Hedef: Ryzen 7 9800X3D / ASUS ROG STRIX B850-I / RTX 3080 12GB
+
+          1. ZIP dosyasini oldugu gibi cikarin. Gizli .bios, .drivers
+             ve .scripts klasorlerini silmeyin.
+          2. .drivers\Download_Gaming_Drivers.cmd dosyasini calistirin.
+             Suruculeri SADECE indirir ve dogrular, kurmaz.
+          3. Download_PostFormat_Apps.cmd dosyasini calistirin.
+             Uygulamalari SADECE indirir ve dogrular, kurmaz.
+          4. Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv ve
+             Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv dosyalarini
+             inceleyip dogrulanmis paketleri manuel kurun.
+          5. Suruculer dogrulandiktan sonra, sistem ayarlarini uygulamak
+             istiyorsaniz Run_CS2_Gaming_Scripts.cmd dosyasini calistirin.
+             Bu adim Windows/CS2 ayarlarini gercekten degistirir.
+          6. Game\autoexec.cfg CS2 yapilandirma dosyasidir; kendi CS2
+             cfg dizininize uygun sekilde elle yerlestirin.
+          7. Training\KOVAAKS_CS2_STANDARD_V1.zip icinde otomatik
+             Apply-KOVAAKS-CS2-STANDARD.bat ve geri yukleme scriptleri var.
+          8. After Game Update\shadercachereset.bat istege bagli bir
+             shader cache temizleyicidir. Her guncelleme sonrasi zorunlu
+             degildir. Temizleme sonrasi shader derleme takilmalari olabilir.
+          9. .bios/current/ROG-B850-I su an yalnizca bekleyen BIOS
+             kayit talimatlarini icerir; dogrulanmis profil yoktur.
+             .bios/legacy/Z690-Tachyon ayarlari eski donanim icindir,
+             B850-I sistemine UYGULAMAYIN.
+
+          Bu paket Windows bolumu bicimlendiren 00_Fresh_Install_W11_Pro.cmd
+          scriptini bilerek icermez. Sabit D: hedefi ve harici WIM gerektirir.
+          Windows uzerinde gercek kurulum testi henuz tamamlanmamistir.
+          INSTRUCTIONS
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile
+          root=Path("dist/SSD Setup")
+          required = [
+              ".drivers/Download_Gaming_Drivers.cmd",
+              ".drivers/Install-Gaming-Drivers-v2-LatestOfficial.ps1",
+              ".drivers/Assets/Monitor/XL2566X+_WHQL dirver_V001_Windows_240605180238.7z",
+              ".scripts/Install-PostFormat-Apps.ps1",
+              ".scripts/CS2-GamingOnly-Pro-v1.0.9.ps1",
+              ".scripts/I226V_Baseline_v2.ps1",
+              ".scripts/Gaming-Device-Disable-v2.ps1",
+              ".scripts/Gaming-Background-Cleanup-v1.ps1",
+              ".scripts/PostFormat-Policy-Baseline-v1.ps1",
+              ".scripts/WU-Driver-Scan-v1.ps1",
+              ".scripts/PostFormat-LowRisk-Background-v1.ps1",
+              ".scripts/PostFormat-App-Privacy-Capabilities-v1.ps1",
+              ".scripts/Gaming-Device-Power-Baseline-v1.ps1",
+              "Training/KOVAAKS_CS2_STANDARD_V1.zip",
+              "After Game Update/shadercachereset.bat",
+              "Game/autoexec.cfg",
+              "Keyboard/wootility.io.txt",
+              "Download_PostFormat_Apps.cmd",
+              "Run_CS2_Gaming_Scripts.cmd",
+              "DOWNLOAD_ONLY.md",
+              "INSTALL_README.txt",
+              ".bios/current/ROG-B850-I/README.md"
+          ]
+          missing=[p for p in required if not (root/p).is_file()]
+          if missing:
+              raise SystemExit("Missing dependencies: "+", ".join(missing))
+          with zipfile.ZipFile(root/"Training/KOVAAKS_CS2_STANDARD_V1.zip") as nested:
+              assert nested.testzip() is None, "KovaaK ZIP is corrupt"
+              assert any(n.endswith("Apply-KOVAAKS-CS2-STANDARD.ps1") for n in nested.namelist())
+              assert any(n.endswith("Restore-Last-Backup.ps1") for n in nested.namelist())
+          print("Required install, training and maintenance files verified")
+          PY
+
+          (cd dist && zip -q -r SSD_Setup_v0.1.zip "SSD Setup")
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          p="dist/SSD_Setup_v0.1.zip"
+          with ZipFile(p) as z:
+              assert z.testzip() is None
+              names=set(z.namelist())
+              must=["SSD Setup/Training/KOVAAKS_CS2_STANDARD_V1.zip",
+                    "SSD Setup/After Game Update/shadercachereset.bat",
+                    "SSD Setup/.bios/README.md",
+                    "SSD Setup/.drivers/Download_Gaming_Drivers.cmd",
+                    "SSD Setup/Run_CS2_Gaming_Scripts.cmd"]
+              assert set(must).issubset(names)
+              assert not any(n.endswith("00_Fresh_Install_W11_Pro.cmd") for n in names)
+              assert not any("FINAL_AUDIT" in n or "Test_WU_Driver_Scan_Once" in n for n in names)
+              print("ZIP integrity and release scope OK:", len(names), "entries")
+          PY
+          sha256sum dist/SSD_Setup_v0.1.zip
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v0.1 >/dev/null 2>&1; then
+            echo "Release v0.1 already exists; refusing to overwrite it."
+            exit 1
+          fi
+          cat > /tmp/ssd-setup-release-notes.md <<'NOTES'
+          SSD Setup v0.1: Windows 11 / CS2 icin secilmis kurulum ve bakim paketi.
+
+          Icerik: gerekli surucu/uygulama indirme-dogrulama scriptleri, Windows/CS2 baseline scriptleri, BIOS klasoru, Game/Keyboard dosyalari, KovaaK otomatik uygulama/geri yukleme paketi ve After Game Update shader cache temizleyicisi.
+
+          Surucu ve uygulama baslaticilari otomatik kurulum yapmaz: sadece indirir/dogrular, manuel kurulum gerekir. Windows/CS2 scriptleri ise sistem ayarlarini degistirir. BIOS klasorundeki Z690 kayitlari eski donanima aittir; mevcut B850-I BIOS profili henuz dogrulanmamistir.
+
+          Tehlikeli sabit D: bicimlendirmesi iceren 00_Fresh_Install_W11_Pro.cmd, test dosyalari, gelistirme raporlari ve eski alias baslaticilar release ZIP'ine alinmamistir.
+
+          Kullanim ayrintilari ZIP icindeki INSTALL_README.txt dosyasinda. Dosya butunlugu CI uzerinde dogrulanmistir; Windows uzerinde canli kurulum testi bu release ile yapilmamistir.
+          NOTES
+          gh release create v0.1 dist/SSD_Setup_v0.1.zip \
+            --target "$GITHUB_SHA" \
+            --title "SSD Setup v0.1" \
+            --notes-file /tmp/ssd-setup-release-notes.md
