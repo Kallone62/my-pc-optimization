@@ -99,7 +99,7 @@ if ($needsDesktopPS -or $needs64Bit -or $needsElevation) {
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$ScriptVersion = '1.2'
+$ScriptVersion = '1.3'
 $ScriptRoot = Split-Path -Parent $PSCommandPath
 $PackRoot = Split-Path -Parent $ScriptRoot
 
@@ -546,7 +546,17 @@ try {
         else {
             try {
                 Set-DefenderMinimalIntervention
-                Write-Host '[APPLIED] Defender minimal-intervention preferences requested.'
+
+                # On this PC, the PUA preference reverts from Disabled (0) to
+                # the Defender default AuditMode (2) after 4-5 seconds.
+                # Enforce the requested value through the documented computer
+                # policy instead of treating a transient preference as success.
+                Ensure-RegistryDword `
+                    -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender' `
+                    -Name 'PUAProtection' `
+                    -Value 0
+
+                Write-Host '[APPLIED] Defender minimal-intervention preferences and explicit PUA computer policy requested.'
             }
             catch {
                 $script:Warnings++
@@ -574,6 +584,12 @@ try {
     # -----------------------------------------------------------------------
     # Verification / audit
     # -----------------------------------------------------------------------
+    # Prior event logs showed PUA reverting after 4-5 seconds. Verify only
+    # after that window; never report success based on a transient value.
+    if ($Mode -eq 'Apply') {
+        Start-Sleep -Seconds 8
+    }
+
     Write-Section 'FINAL EFFECTIVE STATE'
 
     $verificationOk = $true
@@ -629,6 +645,12 @@ try {
     $taskOk = Test-DriverScanTask
     $verificationOk = $taskOk -and $verificationOk
 
+    $verificationOk = (Test-RegistryDword `
+        -Label 'Defender PUA computer policy' `
+        -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender' `
+        -Name 'PUAProtection' `
+        -Expected 0) -and $verificationOk
+
     $defender = $null
     $defenderStateKnown = $true
 
@@ -640,9 +662,15 @@ try {
             -State $(if ($defender.TamperProtected) { 'ON' } else { 'OFF' })
 
         foreach ($entry in $defender.Checks.GetEnumerator()) {
+            $detail = ''
+            if ($entry.Key -eq 'PUAProtectionOff') {
+                $detail = "current=$([int]$defender.Preference.PUAProtection), expected=0"
+            }
+
             Write-Result `
                 -Name ("Defender {0}" -f $entry.Key) `
-                -State $(if ([bool]$entry.Value) { 'OK' } else { 'MISMATCH' })
+                -State $(if ([bool]$entry.Value) { 'OK' } else { 'MISMATCH' }) `
+                -Detail $detail
         }
 
         if (-not $defender.AllOk) {
