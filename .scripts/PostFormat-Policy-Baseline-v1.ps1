@@ -241,7 +241,7 @@ function Ensure-TaskFolder {
     $rootFolder = $service.GetFolder('\')
 
     try {
-        $null = $rootFolder.GetFolder($TaskPath)
+        $null = $rootFolder.GetFolder($TaskPath.TrimEnd('\'))
     }
     catch {
         $null = $rootFolder.CreateFolder($TaskPath.Trim('\'))
