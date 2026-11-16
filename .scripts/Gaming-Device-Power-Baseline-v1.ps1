@@ -8,7 +8,7 @@
     verified by the read-only audit on this PC:
 
       Logitech LIGHTSPEED mouse function
-        USB\VID_046D&PID_C54D&MI_00\*
+        USB\VID_046D&PID_C0A0&MI_00\*
 
       Wooting 80HE keyboard function
         USB\VID_31E3&PID_1402&MI_01\*
@@ -91,8 +91,8 @@ Start-Transcript -Path $LogFile -Force | Out-Null
 $Targets = @(
     [pscustomobject]@{
         Name          = 'Logitech LIGHTSPEED mouse function'
-        InstanceRegex = '^USB\\VID_046D&PID_C54D&MI_00\\'
-        ExpectedVidPid= 'USB\VID_046D&PID_C54D'
+        InstanceRegex = '^USB\\VID_046D&PID_C0A0&MI_00\\'
+        ExpectedVidPid= 'USB\VID_046D&PID_C0A0'
     },
     [pscustomobject]@{
         Name          = 'Wooting 80HE keyboard function'
