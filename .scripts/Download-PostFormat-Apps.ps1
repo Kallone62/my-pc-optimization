@@ -11,6 +11,7 @@ $ErrorActionPreference='Stop'
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
 $PackRoot=Split-Path -Parent $PSScriptRoot
 $DownloadRoot=Join-Path $PackRoot 'Downloads\Apps'
+$VcRoot=Join-Path $DownloadRoot 'VisualCpp_AllInOne'
 $LogRoot=Join-Path $PackRoot 'Logs\PostFormat'
 foreach($dir in @($DownloadRoot,$LogRoot)){New-Item -ItemType Directory -Path $dir -Force | Out-Null}
 $stamp=Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -52,8 +53,8 @@ function Invoke-PublisherDownload {
  }catch {Fail-Entry $Name $_.Exception.Message}
 }
 function Invoke-WinGetDownload {
- param([string]$Id,[string]$Label,[string]$Instructions)
- $folder=Join-Path $DownloadRoot $Id
+ param([string]$Id,[string]$Label,[string]$Instructions,[string]$TargetRoot=$DownloadRoot)
+ $folder=Join-Path $TargetRoot $Id
  try {
   # Drop older package payloads before marking new manifest files READY.
   if(Test-Path -LiteralPath $folder -PathType Container) {
@@ -81,47 +82,95 @@ function Invoke-WinGetDownload {
  } catch {Fail-Entry $Label $_.Exception.Message}
 }
 
+function Publish-VcBundle {
+ param([object[]]$Packages)
+ $manifest=Join-Path $VcRoot 'VC_PACKAGES.csv'
+ $rows=New-Object 'System.Collections.Generic.List[object]'
+ try{
+  New-Item -ItemType Directory -Path $VcRoot -Force | Out-Null
+  $base=[IO.Path]::GetFullPath($VcRoot).TrimEnd('\')+'\'
+  foreach($p in $Packages){
+   $items=@($script:Rows | Where-Object {$_.Component -eq $p.Name -and $_.Status -eq 'READY' -and $_.Source -like ('winget:'+$p.Id+' *')})
+   if($items.Count -ne 1){throw "Incomplete VC++ package: $($p.Id)"}
+   $item=$items[0]
+   $file=[IO.Path]::GetFullPath([string]$item.File)
+   if(-not $file.StartsWith($base,[StringComparison]::OrdinalIgnoreCase) -or -not $file.EndsWith('.exe',[StringComparison]::OrdinalIgnoreCase)){throw "Unexpected VC++ executable: $file"}
+   $sig=Get-AuthenticodeSignature -LiteralPath $file -ErrorAction Stop
+   if($sig.Status -ne 'Valid' -or -not $sig.SignerCertificate -or $sig.SignerCertificate.Subject -notmatch '(?i)Microsoft'){throw "Microsoft signature check failed: $file"}
+   $rows.Add([pscustomobject]@{Id=$p.Id;RelativeFile=$file.Substring($base.Length);SHA256=$item.SHA256})
+  }
+  foreach($name in @('Install_All_VisualCpp.cmd','Install_All_VisualCpp.ps1')){
+   $source=Join-Path $PSScriptRoot $name
+   if(-not (Test-Path -LiteralPath $source -PathType Leaf)){throw "Missing template: $source"}
+   Copy-Item -LiteralPath $source -Destination (Join-Path $VcRoot $name) -Force -ErrorAction Stop
+  }
+  $rows | Export-Csv -LiteralPath $manifest -NoTypeInformation -Encoding UTF8
+  Add-Entry 'Visual C++ All-in-One' 'READY' 'Microsoft via WinGet' (Join-Path $VcRoot 'Install_All_VisualCpp.cmd') '' 'Run as administrator after download; local installer verifies all 12 files before installation.'
+ }catch{
+  Remove-Item -LiteralPath $manifest -Force -ErrorAction SilentlyContinue
+  Fail-Entry 'Visual C++ All-in-One' $_.Exception.Message
+ }
+}
 try {
  Write-Host 'APP PACKAGE DOWNLOAD + VERIFY ONLY (never install)'
+ # Independent official downloads first, including when WinGet is missing.
+ Invoke-PublisherDownload 'DirectX June 2010 offline' 'https://download.microsoft.com/download/8/4/a/84a35bf1-dafe-4ae8-82af-ad2ae20b6b14/directx_Jun2010_redist.exe' 'directx_Jun2010_redist.exe' '(?i)Microsoft' '' 'Manually extract and run DXSETUP.exe; verify legacy components.'
+ Invoke-PublisherDownload 'Logitech Onboard Memory Manager' 'https://download01.logi.com/web/ftp/pub/techsupport/gaming/OnboardMemoryManager_2.3.2055.exe' 'OnboardMemoryManager_2.3.2055.exe' '(?i)Logitech|Logi' '' 'Manually install OMM after verifying release/version.'
+
  $winget=Get-Command winget.exe -ErrorAction SilentlyContinue
+ $wingetReady=$false
  if($winget){
   $script:WinGetPath=$winget.Source
-  $old=$ErrorActionPreference
   try{
-   $ErrorActionPreference='Continue'
-   & $script:WinGetPath download --help *> $null
-   $rc=[int]$LASTEXITCODE
-  } finally {$ErrorActionPreference=$old}
-  if($rc -ne 0){throw 'WinGet download command unavailable. Manually update Microsoft App Installer, then retry.'}
-  $packages=@(
-   @{Id='Microsoft.VCRedist.2008.x86';Name='Visual C++ 2008 x86'},
-   @{Id='Microsoft.VCRedist.2008.x64';Name='Visual C++ 2008 x64'},
-   @{Id='Microsoft.VCRedist.2010.x86';Name='Visual C++ 2010 x86'},
-   @{Id='Microsoft.VCRedist.2010.x64';Name='Visual C++ 2010 x64'},
-   @{Id='Microsoft.VCRedist.2012.x86';Name='Visual C++ 2012 x86'},
-   @{Id='Microsoft.VCRedist.2012.x64';Name='Visual C++ 2012 x64'},
-   @{Id='Microsoft.VCRedist.2013.x86';Name='Visual C++ 2013 x86'},
-   @{Id='Microsoft.VCRedist.2013.x64';Name='Visual C++ 2013 x64'},
-   @{Id='Microsoft.VCRedist.2015+.x86';Name='Visual C++ current x86'},
-   @{Id='Microsoft.VCRedist.2015+.x64';Name='Visual C++ current x64'},
+   $previous=$ErrorActionPreference
+   try{
+    $ErrorActionPreference='Continue'
+    & $script:WinGetPath download --help *> $null
+    $code=[int]$LASTEXITCODE
+   }finally{$ErrorActionPreference=$previous}
+   if($code -ne 0){throw "WinGet download unavailable: $code"}
+   $wingetReady=$true
+  }catch{Fail-Entry 'WinGet preflight' $_.Exception.Message}
+ }else{Fail-Entry 'WinGet preflight' 'WinGet is missing; install/update App Installer.'}
+
+ if($wingetReady){
+  foreach($p in @(
    @{Id='Google.Chrome';Name='Google Chrome'},
    @{Id='AutoHotkey.AutoHotkey';Name='AutoHotkey v2'},
-   @{Id='FACEITLTD.FACEITAC';Name='FACEIT Anti-Cheat only'},
-   @{Id='Spotify.Spotify';Name='Spotify'},
    @{Id='Valve.Steam';Name='Steam'}
-  )
-  foreach($pkg in $packages){
-   $instruction='Install manually, verify publisher/version; no silent switches or bundled optional extras.'
-   if($pkg.Id -eq 'FACEITLTD.FACEITAC'){$instruction='Manually install FACEIT Anti-Cheat; verify separate FACEIT platform client absent.'}
-   if($pkg.Id -eq 'Spotify.Spotify'){$instruction='Install in standard user session; if WinGet hash mismatch occurs the download must fail.'}
-   Invoke-WinGetDownload -Id $pkg.Id -Label $pkg.Name -Instructions $instruction
+  )){
+   Invoke-WinGetDownload -Id $p.Id -Label $p.Name -Instructions 'Manual installation; verify publisher and version.'
   }
- } else {Fail-Entry 'WinGet downloads' 'WinGet is missing. Install/update App Installer manually.'}
 
- Invoke-PublisherDownload 'DirectX June 2010 offline' 'https://download.microsoft.com/download/8/4/a/84a35bf1-dafe-4ae8-82af-ad2ae20b6b14/directx_Jun2010_redist.exe' 'directx_Jun2010_redist.exe' '(?i)Microsoft' '' 'Manually extract and run DXSETUP.exe; verify legacy components.'
+  # TechPowerUp-style one-folder/one-CMD bundle; all source packages stay Microsoft-signed.
+  $vc=@(
+   @{Id='Microsoft.VCRedist.2015+.x86';Name='Visual C++ v14 x86'},
+   @{Id='Microsoft.VCRedist.2015+.x64';Name='Visual C++ v14 x64'},
+   @{Id='Microsoft.VCRedist.2013.x86';Name='Visual C++ 2013 x86'},
+   @{Id='Microsoft.VCRedist.2013.x64';Name='Visual C++ 2013 x64'},
+   @{Id='Microsoft.VCRedist.2012.x86';Name='Visual C++ 2012 x86'},
+   @{Id='Microsoft.VCRedist.2012.x64';Name='Visual C++ 2012 x64'},
+   @{Id='Microsoft.VCRedist.2010.x86';Name='Visual C++ 2010 x86'},
+   @{Id='Microsoft.VCRedist.2010.x64';Name='Visual C++ 2010 x64'},
+   @{Id='Microsoft.VCRedist.2008.x86';Name='Visual C++ 2008 x86'},
+   @{Id='Microsoft.VCRedist.2008.x64';Name='Visual C++ 2008 x64'},
+   @{Id='Microsoft.VCRedist.2005.x86';Name='Visual C++ 2005 x86'},
+   @{Id='Microsoft.VCRedist.2005.x64';Name='Visual C++ 2005 x64'}
+  )
+  foreach($p in $vc){
+   Invoke-WinGetDownload -Id $p.Id -Label $p.Name -TargetRoot $VcRoot -Instructions 'Install via VisualCpp_AllInOne\Install_All_VisualCpp.cmd once all runtimes are READY.'
+  }
+  Publish-VcBundle -Packages $vc
+
+  # Known failure-prone downloads last; individual errors do not stop other packages.
+  Invoke-WinGetDownload -Id 'FACEITLTD.FACEITAC' -Label 'FACEIT Anti-Cheat only' -Instructions 'Manual FACEIT AC install; verify separate FACEIT platform client absent.'
+  Invoke-WinGetDownload -Id 'Spotify.Spotify' -Label 'Spotify' -Instructions 'Manual install; hash mismatch must fail instead of bypassing security.'
+ }else{
+  Fail-Entry 'Visual C++ All-in-One' 'WinGet is unavailable, so runtime bundle cannot be prepared.'
+ }
+
  Invoke-PublisherDownload 'TeamSpeak 3.6.2' 'https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe' 'TeamSpeak3-Client-win64-3.6.2.exe' '(?i)TeamSpeak' 'EAB9E0C1A7134643E5F7116B7E0E58FAFFB20D6DB528F8B333D2C2B5D1AB68AE' 'Manually install 3.6.2 without optional Overwolf; verify no Overwolf.'
- Invoke-PublisherDownload 'Logitech Onboard Memory Manager' 'https://download01.logi.com/web/ftp/pub/techsupport/gaming/OnboardMemoryManager_2.3.2055.exe' 'OnboardMemoryManager_2.3.2055.exe' '(?i)Logitech|Logi' '' 'Manually install OMM after verifying release/version.'
- Add-Entry 'NVIDIA Control Panel HSA' 'MANUAL LINK' 'https://apps.microsoft.com/detail/9NF8H0H7WMLT' '' '' 'Install manually from Microsoft Store after NVIDIA display driver.'
+ Add-Entry 'NVIDIA Control Panel HSA' 'MANUAL LINK' 'https://apps.microsoft.com/detail/9NF8H0H7WMLT' '' '' 'Install through separate Downloads\Drivers CMD after the NVIDIA driver.'
  Add-Entry 'Wootility Web' 'MANUAL LINK' 'https://v5.wootility.io/' '' '' 'Open in browser; no offline installer.'
  Add-Entry 'ExitLag optional' 'MANUAL LINK' 'https://www.exitlag.com/download/' '' '' 'Optional, download/install manually.'
 } catch {Fail-Entry 'Preflight' $_.Exception.Message}

@@ -20,7 +20,7 @@ For freshly imaged Windows without working I226-V inbox Ethernet, manually boots
 
 ## Apps
 
-Launch `Download_PostFormat_Apps.cmd`. It invokes `winget download` (never `winget install`) for Visual C++ runtimes, Chrome, AutoHotkey, FACEIT AC, Spotify and Steam. The WinGet source performs manifest hash validation; the script also records per-file SHA-256 and any Authenticode status. If WinGet source metadata is stale or a CDN file fails its expected hash, that component is FAILED, not silently accepted.
+Launch `Download_PostFormat_Apps.cmd`. It uses `winget download` (never `winget install`) for Chrome, AutoHotkey, Steam, Visual C++ runtimes, FACEIT AC, and Spotify. Riskier downloads are attempted last and per-package failures do not interrupt later items. Visual C++ 2005–2013 and current v14 (x86/x64) are collected in `Downloads\Apps\VisualCpp_AllInOne`. When **all 12** Microsoft packages are verified, run that folder's `Install_All_VisualCpp.cmd` **as Administrator** to install sequentially. This explicit install step validates all SHA-256 hashes and Microsoft signatures again; the downloader never starts it. The WinGet source performs manifest hash validation; the script also records per-file SHA-256 and any Authenticode status. If WinGet source metadata is stale or a CDN file fails its expected hash, that component is FAILED, not silently accepted.
 
 Microsoft DirectX legacy runtime, TeamSpeak 3.6.2 and Logitech Onboard Memory Manager are downloaded from their respective official endpoints with publisher signature checks. TeamSpeak is additionally pinned to its expected SHA-256. Manual TeamSpeak installation must avoid optional Overwolf. FACEIT Anti-Cheat must be checked to ensure the unwanted separate FACEIT platform client was not installed.
 

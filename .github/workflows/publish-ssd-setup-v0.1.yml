@@ -90,6 +90,8 @@ jobs:
               ".drivers/Download-Gaming-Drivers.ps1",
               ".drivers/Assets/Monitor/XL2566X+_WHQL dirver_V001_Windows_240605180238.7z",
               ".scripts/Download-PostFormat-Apps.ps1",
+              ".scripts/Install_All_VisualCpp.cmd",
+              ".scripts/Install_All_VisualCpp.ps1",
               ".scripts/CS2-GamingOnly-Pro-v1.0.9.ps1",
               ".scripts/I226V_Baseline_v2.ps1",
               ".scripts/Gaming-Device-Disable-v2.ps1",
