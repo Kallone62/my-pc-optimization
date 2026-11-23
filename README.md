@@ -1,28 +1,41 @@
 # CS2 PC Optimization
 
-Bu depo, **belirli bir bilgisayar için hazırlanmış Windows 11 ve Counter-Strike 2 kurulum/optimizasyon dosyalarını** içerir. Her bilgisayarda performans artışı sağlayan genel bir tweak paketi değildir.
+[Türkçe](#türkçe) · [English](#english)
 
-**Hedef sistem:** Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · BenQ ZOWIE XL2566X+ (400 Hz).
+---
 
-## Nasıl kullanılır?
+## Türkçe
 
-1. **Dosyaları edin:** Depoyu **Code → Download ZIP** ile indir ve klasör yapısını bozmadan çıkar. Gizli `.drivers` ve `.scripts` klasörlerini koru.
-2. **Sürücüler:** `.drivers\Download_Gaming_Drivers.cmd` dosyasını çalıştır. Paketler `Downloads\Drivers` içine **indirilir ve doğrulanır; otomatik kurulmaz**. `DRIVER_MANUAL_INSTALL_ORDER.csv` raporunu inceleyerek uygun paketleri manuel kur ve gerektiğinde yeniden başlat.
-3. **Uygulamalar:** `Download_PostFormat_Apps.cmd` dosyasını çalıştır. `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv` raporunu kontrol edip uygulamaları manuel kur. Visual C++ All-in-One arşivini çıkarıp gerekirse içindeki `install_all.bat` dosyasını yönetici olarak çalıştır. DirectX web yükleyicisi kurulum sırasında internet ister.
-4. **NVIDIA Denetim Masası:** NVIDIA ekran sürücüsünü kurup yeniden başlattıktan sonra `Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd` dosyasını çalıştır.
-5. **CS2 ayarları:** `Game\autoexec.cfg` dosyasını oyunun uygun yapılandırma klasörüne kendin yerleştir.
+Windows 11 ve Counter-Strike 2 için hazırlanmış, **belirli bir bilgisayara özel** kurulum ve optimizasyon araçları. Sürücü indirme, uygulama hazırlama, CS2 ayarları ve sistem yapılandırmasını tek depoda toplar.
 
-`Run_CS2_Gaming_Scripts.cmd` **isteğe bağlıdır**. Windows, aygıt, ağ ve güvenlik ayarlarını değiştirir; yalnızca etkilerini inceledikten sonra çalıştır.
+**Hedef donanım:** AMD Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz).
 
-## Önemli uyarılar
+### Başlangıç
 
-- **`00_Fresh_Install_W11_Pro.cmd`, sabit `D:` hedefini biçimlendirebilir.** Normal optimizasyon amacıyla çalıştırma.
-- Windows/CS2 politika scriptleri Defender korumalarını ve otomatik güncellemeleri etkileyebilir. Bunların rekabetçi performansa net katkısı doğrulanmış değildir.
-- Paketin indirilmesi ve SHA-256/imza doğrulaması, Windows'a başarıyla kurulduğu anlamına gelmez. Güncel sürümün gerçek Windows ortamında uçtan uca doğrulaması tamamlanmış kabul edilmemelidir.
-- Eski Z690 BIOS kayıtlarını mevcut B850-I platformuna uygulama.
+1. Depoyu ZIP olarak indirip klasör yapısını koruyarak çıkar.
+2. Sürücüler için `.drivers/Download_Gaming_Drivers.cmd`, uygulamalar için `Download_PostFormat_Apps.cmd` dosyasını çalıştır.
+3. `Downloads/` klasöründeki sonuçları kontrol et ve gereken kurulumları manuel tamamla. **İndirme scriptleri yazılımları otomatik kurmaz.**
+4. İstersen `Game/autoexec.cfg` dosyasını CS2'ye uygula. Windows ayarlarını değiştiren `Run_CS2_Gaming_Scripts.cmd` dosyasını yalnızca etkilerini anladıktan sonra çalıştır.
 
-## Ayrıntılı belgeler
+**Dikkat:** `00_Fresh_Install_W11_Pro.cmd`, **D: sürücüsünü biçimlendirebilir.** Normal kurulum veya optimizasyon için çalıştırma. Bazı sistem scriptleri Windows güvenlik ve güncelleme ayarlarını değiştirebilir. Bu ayarların her bilgisayarda performans kazancı sağlayacağı garanti edilmez.
 
-[Donanım](docs/SYSTEM.md) · [CS2 referans ayarları](docs/REFERENCE_STATE.md) · [Kurulum ayrıntıları](docs/DOWNLOAD_ONLY.md) · [Doğrulama durumu](docs/VALIDATION.md)
+**Belgeler:** [Sistem](docs/SYSTEM.md) · [CS2 referansı](docs/REFERENCE_STATE.md) · [Kurulum ayrıntıları](docs/DOWNLOAD_ONLY.md) · [Doğrulama durumu](docs/VALIDATION.md)
 
-Bu README kullanıcılar içindir. Geliştirme notları ve teknik ayrıntılar `docs/` klasöründe tutulur.
+---
+
+## English
+
+Hardware-specific setup and optimization tools for Windows 11 and Counter-Strike 2. This repository brings together driver downloads, application preparation, CS2 configuration, and system settings for **one particular PC**.
+
+**Target hardware:** AMD Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz).
+
+### Getting started
+
+1. Download the repository as a ZIP and extract it without changing its folder structure.
+2. Run `.drivers/Download_Gaming_Drivers.cmd` for drivers and `Download_PostFormat_Apps.cmd` for applications.
+3. Check the results under `Downloads/` and complete the necessary installations manually. **The download scripts do not install software automatically.**
+4. Optionally apply `Game/autoexec.cfg` to CS2. Run `Run_CS2_Gaming_Scripts.cmd` only after reviewing the Windows settings it changes.
+
+**Warning:** `00_Fresh_Install_W11_Pro.cmd` **may format the D: drive.** Do not run it for normal setup or optimization. Some system scripts may alter Windows security and update settings. Performance improvements are not guaranteed on other hardware.
+
+**Documentation:** [System](docs/SYSTEM.md) · [CS2 reference](docs/REFERENCE_STATE.md) · [Installation details](docs/DOWNLOAD_ONLY.md) · [Validation status](docs/VALIDATION.md)
