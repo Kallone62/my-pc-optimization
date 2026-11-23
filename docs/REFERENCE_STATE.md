@@ -1,22 +1,26 @@
-# Reference state
+# Referans Ayarlar / Reference State
 
-This file records the current source-of-truth settings that other layers are expected to follow.
+## Türkçe
 
-## CS2
+Bu dosya aktif **CS2 ve peripheral baseline'ımın** kayıtlı değerlerini tutuyor. Güncel olması, her ayarın optimize edildiği anlamına gelmiyor.
 
-- Resolution: **1280×960**, 4:3 stretched
-- Sensitivity: **0.475**
-- Zoom sensitivity ratio: **0.9**
-- `fps_max`: **0**
-- VSync: disabled
-- NVIDIA G-SYNC: disabled in the recorded game state
-- NVIDIA Reflex: disabled in the recorded game state
+### CS2
 
-### Current crosshair
+| Ayar | Baseline |
+| --- | --- |
+| Resolution | **1280×960**, 4:3 stretched |
+| Sensitivity | **0.475** |
+| Zoom sensitivity ratio | **0.9** |
+| \`fps_max\` | **0** |
+| VSync | Off |
+| NVIDIA G-SYNC | Off (kayıtlı oyun durumu) |
+| NVIDIA Reflex | Off (kayıtlı oyun durumu) |
 
-The current root `Game/autoexec.cfg` uses the post-September-2026 pixel crosshair variables:
+### Crosshair
 
-```cfg
+Aktif CS2 kaynağı \`Game/autoexec.cfg\`. Crosshair, Eylül 2026 sonrasındaki pixel değişkenlerini kullanıyor:
+
+\`\`\`cfg
 cl_crosshair_drawoutline "0"
 cl_crosshair_recoil "false"
 cl_crosshair_t "false"
@@ -30,40 +34,31 @@ cl_crosshaircolor_g "255"
 cl_crosshaircolor_b "0"
 cl_crosshaircolor_a "255"
 cl_crosshair_screen_height "960"
-```
+\`\`\`
 
-This root autoexec is the CS2-specific authority. The KovaaK V1 package is synchronized to it.
+KovaaK V1 profili aktif autoexec ile eşleştirildi.
 
-## Desktop mouse baseline
+### Windows desktop mouse
 
-For the intended 1600-DPI setup:
+1600 DPI için kayıtlı baseline:
 
-- `MouseSensitivity=4`
-- `MouseSpeed=0`
-- `MouseThreshold1=0`
-- `MouseThreshold2=0`
+- \`MouseSensitivity=4\`
+- \`MouseSpeed=0\`
+- \`MouseThreshold1=0\`
+- \`MouseThreshold2=0\`
 
-This disables the Windows acceleration/EPP path used by the baseline while retaining the intended desktop pointer-speed setting.
+Desktop pointer speed korunuyor; Windows mouse acceleration / EPP yolu kapalı.
 
-## Mouse
+### Mouse, keyboard ve display
 
-Logitech Superlight 2 DEX:
+- **Logitech G PRO X Superlight 2 DEX:** 1600 DPI, 2000 Hz, LOD High
+- **Wooting 80HE:** genel actuation 0.5 mm; Ctrl/Shift 0.3 mm; WASD 0.1 mm; Rapid Trigger (WASD/Ctrl) 0.1 mm
+- **ZOWIE XL2566X+:** fullscreen CS2, 1280×960, 400 Hz
 
-- 1600 DPI
-- 2000 Hz
-- LOD High
+Orijinal screenshot'lar kaynak arşivinde; bu dosyada tekrar uygulanabilir değerleri tutuyorum.
 
-## Keyboard
+## English
 
-Wooting 80HE:
+This file records my active **CS2 and peripheral baseline**, not a list of proven optimal settings. The CS2 values, pixel crosshair commands, mouse and keyboard settings, and 400 Hz display state are listed above.
 
-- general actuation: 0.5 mm
-- Ctrl / Shift: 0.3 mm
-- WASD: 0.1 mm
-- Rapid Trigger: WASD / Ctrl 0.1 mm
-
-## Display
-
-BenQ XL2566X+; recorded CS2 display state uses 1280×960 fullscreen at 400 Hz.
-
-Raw setup screenshots remain part of the audited source package; the repository keeps this text reference instead of duplicating large screenshots in Git history.
+\`Game/autoexec.cfg\` is the authoritative CS2 configuration; the KovaaK V1 profile is synchronized to it. The desktop mouse values preserve the configured pointer speed while disabling the Windows acceleration/EPP path. Original setup screenshots remain in the source archive.
