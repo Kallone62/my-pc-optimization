@@ -6,9 +6,9 @@
 
 ## Türkçe
 
-Windows 11 ve Counter-Strike 2 için hazırlanmış, **belirli bir bilgisayara özel** kurulum ve optimizasyon araçları. Sürücü indirme, uygulama hazırlama, CS2 ayarları ve sistem yapılandırmasını tek depoda toplar.
+Bu depo, **kendi bilgisayar sistemimin Windows 11 ve Counter-Strike 2 kurulum ve optimizasyon yapılandırmalarını** saklar. Sistemimi yükselttikçe güncel ayarları yeni donanıma göre düzenler, önceki sistemlerin yapılandırmalarını ise arşivde korurum.
 
-**Hedef donanım:** AMD Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz).
+**Güncel sistem:** AMD Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz).
 
 ### Başlangıç
 
@@ -25,9 +25,9 @@ Windows 11 ve Counter-Strike 2 için hazırlanmış, **belirli bir bilgisayara �
 
 ## English
 
-Hardware-specific setup and optimization tools for Windows 11 and Counter-Strike 2. This repository brings together driver downloads, application preparation, CS2 configuration, and system settings for **one particular PC**.
+This repository stores the **Windows 11 and Counter-Strike 2 setup and optimization configurations for my personal PC**. As I upgrade my hardware, I adapt the active configuration to the new system and preserve previous configurations as an archive.
 
-**Target hardware:** AMD Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz).
+**Current system:** AMD Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz).
 
 ### Getting started
 
