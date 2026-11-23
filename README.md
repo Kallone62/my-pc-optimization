@@ -1,45 +1,36 @@
-# my-pc-optimization
+# PC Optimization — CS2 machine
 
-Personal, hardware-specific Windows 11 / CS2 environment, **not** a general PC-tweak guide. Target hardware and peripherals: [SYSTEM.md](SYSTEM.md); CS2 reference values: [REFERENCE_STATE.md](REFERENCE_STATE.md).
+Hardware-specific Windows 11 / CS2 setup for one PC, not a generic tuning guide.
 
-## Current deployment model — download & verify, then manual install
+- [Hardware](SYSTEM.md) · [CS2/input/display reference](REFERENCE_STATE.md)
+- [Manual installation details](DOWNLOAD_ONLY.md) · [Validation status](VALIDATION.md)
 
-**Driver and application launchers no longer install, uninstall, bind PnP drivers, or remove bundled applications.** They prepare current official downloads under the folder containing SSD Setup and record hashes, versions, source URLs and errors.
+## Canonical entrypoints
 
-Run:
-1. `.drivers\Check_Gaming_Driver_Syntax.cmd` (Windows PowerShell 5.1 parser check).
-2. `.drivers\Download_Gaming_Drivers.cmd` — AMD B850, ASUS I226-V/Realtek UCM, AMD iGPU, NVIDIA RTX 3080 WHQL, bundled ZOWIE INF.
-3. `Download_PostFormat_Apps.cmd` — WinGet `download` for runtime/apps; official DirectX, TeamSpeak and Logitech downloads; Store/web-only items as manual links.
-4. Review `Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv` and `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`, resolve every FAILED row, then **manually** install one component at a time with verification/reboots as appropriate.
-5. Apply Windows/CS2 baseline separately using `Run_CS2_Gaming_Scripts.cmd` only when intended and after drivers are stable.
+| Task | Launcher | Effect |
+| --- | --- | --- |
+| Check downloader syntax | `.drivers\Check_Gaming_Driver_Syntax.cmd` | Read-only |
+| Prepare official driver packages | `.drivers\Download_Gaming_Drivers.cmd` | Download and verify; no install |
+| Prepare application packages | `Download_PostFormat_Apps.cmd` | Download and verify; no install |
+| Apply Windows/CS2 policies | `Run_CS2_Gaming_Scripts.cmd` | **Changes Windows, network, device, and security settings** |
 
-Legacy `Run_Gaming_Drivers_v2.cmd`, `Audit_Gaming_Drivers_v2.cmd`, and `Run_PostFormat_Apps.cmd` are safe aliases to the new **download-only** launchers. The older Spotify unattended helper has been removed. No automatic installer mode remains in the two package preparation scripts.
+Before manual installation, inspect the generated
+`Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv` and
+`Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`.
+NVIDIA Control Panel is a separate Microsoft Store app.
+AMD iGPU installation is optional and must be tested independently.
 
-All script-owned file artifacts are rooted relative to **SSD Setup**, not `ProgramData`, `Program Files` or the user Temp directory:
+## Rules
 
-```text
-SSD Setup/
-  Downloads/Drivers/
-  Downloads/Apps/
-  Logs/Drivers/
-  Logs/PostFormat/
-  Logs/CS2/
-  Logs/Policy/
-  Logs/Devices/
-  State/
-  Work/Drivers/Extracted/
-```
+1. Establish a clean, official-driver Windows reference before applying policy scripts.
+2. Keep cosmetic setup separate from performance or network changes.
+3. Change one variable per CS2 comparison; record frametime tails, shot consistency and online behavior.
+4. Validate Windows runtime, reboot persistence and FACEIT before calling any change an improvement.
 
-This governs paths that our scripts choose. Windows, WinGet and vendor utilities can still maintain their own internal OS caches when invoked or when you install manually.
+**Safety:** `00_Fresh_Install_W11_Pro.cmd` can **format D:** and is not
+part of the release ZIP. Do not run it as a normal optimization step.
+`Run_CS2_Gaming_Scripts.cmd` can disable Defender features and automatic updates.
+Its effects are not limited to cosmetic cleanup.
 
-**Important:** `00_Fresh_Install_W11_Pro.cmd` is separate, destructive Windows-image automation and still contains a hard-coded D: format target. Do not run casually. The `.scripts` Windows/CS2 baseline tools also make OS setting changes; only the **driver/app preparation** layers are download-only.
-
-Detailed procedures, limits, error handling and manual order: [DOWNLOAD_ONLY.md](DOWNLOAD_ONLY.md).
-
-## Optimization baseline
-
-AMD Ryzen 7 9800X3D, ASUS ROG STRIX B850-I, same G.Skill Hynix A-die 2×16GB kit, RTX 3080 12GB, Samsung 990 Pro, BenQ XL2566X+, Logitech Superlight 2 DEX and Wooting 80HE. BIOS legacy Tachyon settings live separately in `.bios/legacy/` and are not current defaults.
-
-CS2 baseline v1.0.9 and launcher REV14.8, I226-V v2.4, gaming-device-power v1.4 and KovaaK standardized profile remain separate. Paths/storage changed earlier; this deployment alters **driver and app installers**, not these game/performance settings.
-
-[VALIDATION.md](VALIDATION.md) distinguishes static source checks from the still-required real Windows runtime validation. [SOURCE_PACKAGE.md](SOURCE_PACKAGE.md) preserves historical 2026-10-08 ZIP provenance.
+Current B850-I BIOS settings are pending capture. Never apply
+`.bios/legacy/Z690-Tachyon/` settings to this platform.

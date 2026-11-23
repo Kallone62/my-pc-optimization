@@ -130,8 +130,8 @@ reg.exe add "HKLM\OFFSOFT\Policies\Microsoft\Windows\DriverSearching" ^
  /v SearchOrderConfig /t REG_DWORD /d 0 /f >nul
 if errorlevel 1 goto :regfail
 
-rem Compatibility guard for older policy plumbing. Driver installer v2.3.6
-rem removes this temporary value after all selected drivers verify successfully.
+rem Compatibility guard for older policy plumbing. Current download-only
+rem tools do not remove this policy; review it after manual driver installation.
 reg.exe add "HKLM\OFFSOFT\Policies\Microsoft\Windows\DriverSearching" ^
  /v DontSearchWindowsUpdate /t REG_DWORD /d 1 /f >nul
 if errorlevel 1 goto :regfail
@@ -176,9 +176,9 @@ if not exist "%TARGET_DRIVE%\Windows\System32\Config\SOFTWARE" (
     echo [FAILED] Offline Windows SOFTWARE hive missing after apply.
     goto :fail
 )
-if not exist "%SETUP_DEST%\.drivers\Run_Gaming_Drivers_v2.cmd" (
+if not exist "%SETUP_DEST%\.drivers\Download_Gaming_Drivers.cmd" (
     echo [WARNING] Expected driver launcher not found at:
-    echo "%SETUP_DEST%\.drivers\Run_Gaming_Drivers_v2.cmd"
+    echo "%SETUP_DEST%\.drivers\Download_Gaming_Drivers.cmd"
     echo The image itself is valid, but check SSD Setup contents before reboot.
 )
 
@@ -196,10 +196,10 @@ echo.
 echo  After booting the new Windows:
 echo    1. Complete OOBE offline.
 echo    2. If Ethernet has no inbox driver, install the local I226-V INF once.
-echo    3. Run C:\SSD Setup\.drivers\Run_Gaming_Drivers_v2.cmd
-echo    4. Reboot after driver completion.
-echo    5. Run C:\SSD Setup\Run_CS2_Gaming_Scripts.cmd
-echo    6. Run C:\SSD Setup\Run_PostFormat_Apps.cmd
+echo    3. Run C:\SSD Setup\.drivers\Download_Gaming_Drivers.cmd
+echo    4. Manually install downloaded drivers one by one; reboot if required.
+echo    5. OPTIONAL: Run C:\SSD Setup\Run_CS2_Gaming_Scripts.cmd
+echo    6. Run C:\SSD Setup\Download_PostFormat_Apps.cmd
 echo.
 echo  Rebooting in 15 seconds. Press Ctrl+C to stay in this Windows.
 shutdown.exe /r /t 15 /c "Fresh Windows image applied. Choose the newly formatted Windows entry in the existing boot menu."

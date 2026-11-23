@@ -8,4 +8,4 @@ These ZIPs and their original installer validation records are **historical**, n
 
 Starting 2026-10-16, the live GitHub tree is the authoritative download-only configuration for the driver/app layer. Per-run component checksums and source receipts are generated in `Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv` and `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`.
 
-The original hardware/CS2/KovaaK reference settings remain in [REFERENCE_STATE.md](REFERENCE_STATE.md) and [SYSTEM.md](SYSTEM.md).
+The original hardware/CS2/KovaaK reference settings remain in [REFERENCE_STATE.md](REFERENCE_STATE.md) and [SYSTEM.md](SYSTEM.md). The old `FINAL_*` reports are available in Git history, not current validation.
