@@ -1,5 +1,4 @@
 # Human ownership of the public README and AI instructions.
 # Effective required review needs GitHub branch protection/rulesets.
 /README.md @Kallone62
-/AGENTS.md @Kallone62
 /.github/CODEOWNERS @Kallone62
