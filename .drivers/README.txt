@@ -2,7 +2,7 @@ DRIVER DOWNLOAD + VERIFY ONLY
 ================================
 Launcher: Download_Gaming_Drivers.cmd
 PowerShell source: Download-Gaming-Drivers.ps1
-Syntax checker: Check_Gaming_Driver_Syntax.cmd
+Syntax checker: tests\Check_Gaming_Driver_Syntax.cmd (from repository root)
 
 The downloader does not install or bind drivers. It prepares official packages
 and writes Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv with validation

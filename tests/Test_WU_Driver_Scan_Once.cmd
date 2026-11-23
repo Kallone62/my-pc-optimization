@@ -2,7 +2,8 @@
 setlocal EnableExtensions DisableDelayedExpansion
 title Windows Update Driver-Only Scan Test
 
-set "SCRIPT=%~dp0.scripts\WU-Driver-Scan-v1.ps1"
+for %%I in ("%~dp0..") do set "PACK_ROOT=%%~fI"
+set "SCRIPT=%PACK_ROOT%\.scripts\WU-Driver-Scan-v1.ps1"
 if not exist "%SCRIPT%" (
     echo ERROR: Missing "%SCRIPT%"
     pause
@@ -14,7 +15,7 @@ set "RC=%ERRORLEVEL%"
 
 echo.
 echo Exit code: %RC%
-echo Report: %~dp0Logs\WU-Driver-Scan\latest.txt
+echo Report: %PACK_ROOT%\Logs\WU-Driver-Scan\latest.txt
 echo.
 pause
 exit /b %RC%

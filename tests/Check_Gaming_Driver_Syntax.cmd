@@ -2,8 +2,8 @@
 setlocal EnableExtensions DisableDelayedExpansion
 title Gaming Driver Downloader - Syntax Check
 
-set "ROOT=%~dp0"
-set "DRIVER_SCRIPT=%ROOT%Download-Gaming-Drivers.ps1"
+for %%I in ("%~dp0..") do set "ROOT=%%~fI"
+set "DRIVER_SCRIPT=%ROOT%\.drivers\Download-Gaming-Drivers.ps1"
 set "POWERSHELL_EXE=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
 
 if not exist "%DRIVER_SCRIPT%" (

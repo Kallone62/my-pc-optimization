@@ -9,7 +9,7 @@ Hardware-specific Windows 11 / CS2 setup for one PC, not a generic tuning guide.
 
 | Task | Launcher | Effect |
 | --- | --- | --- |
-| Check downloader syntax | `.drivers\Check_Gaming_Driver_Syntax.cmd` | Read-only |
+| Check downloader syntax | `tests\Check_Gaming_Driver_Syntax.cmd` | Read-only |
 | Prepare official driver packages | `.drivers\Download_Gaming_Drivers.cmd` | Download and verify; no install |
 | Prepare application packages | `Download_PostFormat_Apps.cmd` | Download and verify; no install |
 | Apply Windows/CS2 policies | `Run_CS2_Gaming_Scripts.cmd` | **Changes Windows, network, device, and security settings** |
