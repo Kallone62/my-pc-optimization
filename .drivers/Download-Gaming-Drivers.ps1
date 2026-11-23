@@ -844,7 +844,7 @@ try {
     Download-OfficialFile -Url $pkg.Url -Destination $p -Referer $pkg.Referer
     Assert-AuthenticodePublisher -Path $p -PublisherRegex '(?i)NVIDIA'
     Register-SignedDownloadCache -Path $p -Url $pkg.Url
-    Save-DriverReady 'NVIDIA RTX 3080 WHQL Game Ready' $pkg.Version $p $pkg.Url 'Manual CUSTOM installer selection: Graphics Driver only; do not select NVIDIA App / HD Audio. Verify display driver, reboot; then run Downloads\\Drivers\\Install_NVIDIA_Control_Panel.cmd.'
+    Save-DriverReady 'NVIDIA RTX 3080 WHQL Game Ready' $pkg.Version $p $pkg.Url 'Manual CUSTOM installer selection: Graphics Driver only; do not select NVIDIA App / HD Audio. Verify display driver, reboot; then run Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd.'
   }
   Invoke-DriverDownloadStep 'BenQ ZOWIE XL2566X+ monitor INF' {
     if(-not (Test-Path -LiteralPath $MonitorPackagePath -PathType Leaf)) {throw "Bundled package missing: $MonitorPackagePath"}
@@ -869,8 +869,6 @@ finally {
   try {
     $csv=Join-Path $DownloadRoot 'DRIVER_MANUAL_INSTALL_ORDER.csv'
     $json=Join-Path $LogRoot "driver-download-$Stamp.json"
-    $script:Rows | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $json -Encoding UTF8
-    $script:Rows | Export-Csv -LiteralPath $csv -NoTypeInformation -Encoding UTF8
     # Stage the explicit post-driver Store installer next to downloaded packages.
     # No application installation happens during this download-only run.
     $controlPanelCmd = Join-Path $ScriptRoot 'Install_NVIDIA_Control_Panel.cmd'
@@ -885,9 +883,11 @@ finally {
     catch {
       Write-DriverFailure 'NVIDIA Control Panel CMD' $_.Exception.Message
     }
+    $script:Rows | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $json -Encoding UTF8
+    $script:Rows | Export-Csv -LiteralPath $csv -NoTypeInformation -Encoding UTF8
     Write-Host "Manifest : $csv"
     Write-Host "Log      : $LogFile"
-    Write-Host "NVIDIA Control Panel: run Install_NVIDIA_Control_Panel.cmd from Downloads\\Drivers AFTER manually installing NVIDIA driver and rebooting."
+    Write-Host "NVIDIA Control Panel: run Install_NVIDIA_Control_Panel.cmd from Downloads\Drivers AFTER manually installing NVIDIA driver and rebooting."
     Write-Host "Status: $($script:Failures) failed components; NO INSTALLATION was attempted."
   } finally {
     try {Stop-Transcript | Out-Null} catch {}
