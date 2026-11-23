@@ -2,7 +2,7 @@
 
 ## Türkçe
 
-Bu dosya aktif **CS2 ve peripheral baseline'ımın** kayıtlı değerlerini tutuyor. Güncel olması, her ayarın optimize edildiği anlamına gelmiyor.
+Aktif **CS2, input ve display baseline'ımın** kayıtlı değerlerini burada tutuyorum. Bunlar testlerde karşılaştırdığım başlangıç değerleri.
 
 ### CS2
 
@@ -47,7 +47,7 @@ KovaaK V1 profili aktif autoexec ile eşleştirildi.
 - `MouseThreshold1=0`
 - `MouseThreshold2=0`
 
-Desktop pointer speed korunuyor; Windows mouse acceleration / EPP yolu kapalı.
+Desktop pointer speed aynı; Windows mouse acceleration / EPP kapalı.
 
 ### Mouse, keyboard ve display
 
@@ -55,10 +55,10 @@ Desktop pointer speed korunuyor; Windows mouse acceleration / EPP yolu kapalı.
 - **Wooting 80HE:** genel actuation 0.5 mm; Ctrl/Shift 0.3 mm; WASD 0.1 mm; Rapid Trigger (WASD/Ctrl) 0.1 mm
 - **ZOWIE XL2566X+:** fullscreen CS2, 1280×960, 400 Hz
 
-Orijinal screenshot'lar kaynak arşivinde; bu dosyada tekrar uygulanabilir değerleri tutuyorum.
+Kaynak screenshot'lar arşivde; burada yeniden uygulanabilir ayar değerleri var.
 
 ## English
 
-This file records my active **CS2 and peripheral baseline**, not a list of proven optimal settings. The CS2 values, pixel crosshair commands, mouse and keyboard settings, and 400 Hz display state are listed above.
+This file records my active **CS2, input and display baseline** for comparisons. The CS2 values, pixel crosshair commands, mouse and keyboard settings, and 400 Hz display state are listed above.
 
 `Game/autoexec.cfg` is the authoritative CS2 configuration; the KovaaK V1 profile is synchronized to it. The desktop mouse values preserve the configured pointer speed while disabling the Windows acceleration/EPP path. Original setup screenshots remain in the source archive.

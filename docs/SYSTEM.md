@@ -2,7 +2,7 @@
 
 ## Türkçe
 
-Bu belgede CS2 için kullandığım **güncel donanım ve peripheral baseline'ı** kayıtlı. Upgrade yaptığımda aktif profil değişir, önceki sistemin ayarları arşivde kalır. BIOS veya driver ayarları farklı donanımlara doğrudan aktarılmaz.
+CS2 için **güncel hardware ve peripheral baseline'ımı** burada tutuyorum. Upgrade sonrası aktif profil yeni sisteme göre güncelleniyor; eski platformun BIOS ve driver kayıtları arşivde kalıyor.
 
 ### Güncel sistem
 
@@ -47,7 +47,7 @@ Bu belgede CS2 için kullandığım **güncel donanım ve peripheral baseline'ı
 | Ambient occlusion / FSR | Off |
 | HDR | Quality |
 
-Bunlar o anda kaydedilmiş **baseline** değerleri. Bir ayarın en iyi sonucu verdiğini söylemek için aynı koşullarda karşılaştırma gerekiyor.
+Bunlar kayıtlı **baseline** değerleri. Değişiklikleri aynı koşullarda karşılaştırarak değerlendiriyorum.
 
 ### Önceki sistem
 
@@ -59,7 +59,7 @@ Eski BIOS export'ları: `.bios/legacy/Z690-Tachyon/`.
 
 This is my **current hardware and peripheral baseline** for competitive CS2. Future upgrades will receive their own active configuration, while older platform records stay archived.
 
-The tables above contain the recorded hardware, input and display values. The G.Skill DDR5 kit is the same physical kit previously described as “Hynix A-Die 2×16” on the Z690 platform; it was not replaced during the platform migration. Display values are a **recorded baseline**, not a claim of optimality.
+The tables above record the hardware, input and display values used for comparisons. The G.Skill DDR5 kit is the same physical kit previously described as “Hynix A-Die 2×16” on the Z690 platform; it was not replaced during the platform migration. Display values describe the **recorded baseline**.
 
 **Previous system:** Intel Core i9-13900KF, Gigabyte Z690 Tachyon, the same DDR5 kit, RTX 3080, Samsung 990 Pro 1 TB, Lian Li GALAHAD 360, Lian Li LANCOOL III and FSP Hydro PTM PRO. BIOS exports are stored under `.bios/legacy/Z690-Tachyon/`.
 

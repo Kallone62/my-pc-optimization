@@ -7,7 +7,7 @@ Başlatıcı: Download_Gaming_Drivers.cmd
 PowerShell: Download-Gaming-Drivers.ps1
 Syntax kontrolü: tests\Check_Gaming_Driver_Syntax.cmd (repo kökünden)
 
-Bu script uygun driver paketlerini indirir ve doğrular; otomatik kurulum yapmaz.
+Bu downloader hardware-matched driver paketlerini indirir ve verify eder; installation manuel.
 Sonuç: Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv
 FAILED durumundaki paket kurulum için hazır değil.
 
@@ -21,8 +21,8 @@ Manuel kurulum sırası:
 7. NVIDIA driver + reboot sonrasında:
    Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd
 
-AMD Adrenalin EXE hazır bir driver-only INF değil. iGPU için hardware ID ve
-INF eşleşmesini ayrıca kontrol ediyorum.
+AMD Adrenalin EXE doğrudan driver-only INF değil. iGPU için hardware ID ve
+INF eşleşmesini ayrı doğruluyorum.
 
 ENGLISH
 

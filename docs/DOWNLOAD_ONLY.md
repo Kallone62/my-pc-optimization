@@ -1,6 +1,6 @@
 # Sürücü ve Uygulama Hazırlığı / Driver and App Downloads
 
-Bu katmanın amacı **paketleri indirmek, doğrulamak ve kurulumu ayrı tutmak**. Böylece hangi driver veya uygulamanın sistem davranışını değiştirdiğini kontrollü test edebilirim.
+Driver ve uygulamaları **download → verification → manuel installation** şeklinde ayırıyorum. Böylece her kurulumun sistem davranışına etkisini ayrı test edebiliyorum.
 
 The purpose of this layer is to **download and verify packages while keeping installation separate**, so driver and application changes can be tested independently.
 
@@ -9,9 +9,9 @@ The purpose of this layer is to **download and verify packages while keeping ins
 ### İndirme akışı
 
 - Driver paketleri resmî vendor kaynaklarından, Visual C++ All-in-One arşivi TechPowerUp'tan indiriliyor.
-- Paketler `Downloads/`, log ve receipt'ler `Logs/` altında; sürücü harfine bağlı değiller.
+- Paketler `Downloads/`, log ve receipt'ler `Logs/` altında tutuluyor; sabit drive letter bağımlılığı yok.
 - Doğrudan HTTPS transferlerinde `curl.exe`, retry ve sunucu desteklediğinde resume kullanılıyor. Doğrulanmış dosyalar uygun koşullarda tekrar indirilmiyor.
-- WinGet geçici olarak `wininet` backend'iyle çalışıyor. Normal çıkışta eski ayarlar geri yükleniyor; kesinti ihtimali için yedek tutuluyor. A/B karşılaştırması için `-WinGetDownloader Default` kullanılabilir.
+- WinGet indirmelerinde geçici olarak `wininet` backend'ini kullanıyorum. Normal çıkışta eski ayarlar restore ediliyor; kesintiye karşı backup tutuluyor. A/B testinde `-WinGetDownloader Default` kullanılabilir.
 - SHA-256, Authenticode ve gerektiğinde vendor hash / catalog doğrulaması yapılıyor. `FAILED` durumundaki paket hazır değil.
 - Driver ve app downloader'ları **kurulum yapmıyor**. NVIDIA Control Panel'in ayrı CMD'si ise Store üzerinden kurulum yapıyor.
 
@@ -46,13 +46,13 @@ Temiz Windows'ta I226-V internet bağlantısı henüz yoksa önceden hazırlanm�
 - **NVIDIA Control Panel:** NVIDIA driver kurulumundan ve reboot'tan sonra ayrı CMD ile Microsoft Store'dan kuruluyor.
 - **Wootility:** Browser üzerinden. **ExitLag:** İsteğe bağlı manuel indirme.
 
-WinGet paket klasörleri yeni indirme öncesi temizleniyor; eski dosya güncel sürüm gibi gösterilmiyor. Bir paketin başarısız olması sonraki paketleri engellemiyor.
+WinGet paket klasörleri yeni indirme öncesi temizleniyor; eski dosya güncel sürüm gibi gösterilmiyor. Tek paketin download hatası diğer paketlerin indirilmesini engellemiyor.
 
 Sonuç: `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`. Bu dosya **indirme ve doğrulama durumunu** gösterir, kurulu uygulama listesini değil.
 
 ### Karşılaştırma
 
-Driver kurulumu veya büyük download sırasında benchmark yapmam. Aynı CS2 map/server/client koşullarında frametime spike'larını, alt-tab/focus değişimlerini, Event Viewer driver reset kayıtlarını ve latency sonuçlarını karşılaştırırım.
+Benchmark'ları driver kurulumu ve büyük download'lardan ayrı çalıştırıyorum. Aynı CS2 map/server/client koşullarında frametime spike, input latency, alt-tab/focus ve Event Viewer driver reset kayıtlarını karşılaştırıyorum.
 
 ## English
 

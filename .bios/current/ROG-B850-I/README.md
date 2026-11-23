@@ -4,7 +4,7 @@
 
 ## Türkçe
 
-Bu klasör güncel sistemimin BIOS baseline'ı için ayrıldı. **Kayıt ve doğrulama henüz tamamlanmadı.** Z690 Tachyon export'ları `../../legacy/Z690-Tachyon/` altında arşivli; buradaki ayarların doğrudan kaynağı değiller.
+Bu klasör güncel B850-I BIOS baseline'ına ayrıldı. **BIOS capture ve validation henüz tamamlanmadı.** Önceki Z690 export'ları `../../legacy/Z690-Tachyon/` altında arşivli.
 
 Baseline eklendiğinde şu değerleri, gerçekten kullandığım BIOS sürümüyle birlikte kaydedeceğim:
 
@@ -18,7 +18,7 @@ Baseline eklendiğinde şu değerleri, gerçekten kullandığım BIOS sürümüy
 - PCIe / ReBAR / storage ayarları
 - Test tekrarlanabilirliği için fan/pump profili
 
-Değerleri **bu anakart ve bu BIOS sürümü** üzerinde kontrol edip Windows/CS2 baseline'ıyla karşılaştırdıktan sonra aktif kayıt hâline getireceğim.
+Değerleri bu motherboard/BIOS sürümünde doğrulayıp Windows/CS2 baseline'ına karşı test ettikten sonra aktif profile ekleyeceğim.
 
 ## English
 

@@ -2,7 +2,7 @@
 
 ## Türkçe
 
-Bu klasörde **önceki Intel platformumun** BIOS export'ları var. Güncel B850-I yapılandırmasının parçası değiller; eski testleri ve ayarları takip etmek için saklıyorum.
+Burada **önceki i9-13900KF / Z690 Tachyon sistemimin** BIOS export'larını saklıyorum. B850-I baseline'ından ayrı tutuyorum.
 
 **O dönemki sistem:** Intel Core i9-13900KF · Gigabyte Z690 Tachyon · güncel sistemle aynı G.Skill 2×16 GB DDR5 / Hynix A-Die kit · RTX 3080 · Samsung 990 Pro 1 TB · Lian Li GALAHAD 360 · Lian Li LANCOOL III · FSP Hydro PTM PRO.
 
@@ -10,7 +10,7 @@ Bu klasörde **önceki Intel platformumun** BIOS export'ları var. Güncel B850-
 - `F29Z690TachyonSafe.txt`
 - `F29Z690TachyonExperimental.txt`
 
-İki dosya da AMISCE tarzı NVRAM/setup export'u içeriyor. Token ve offset'ler firmware'e özgü olduğundan ASUS B850-I BIOS'una import edilmiyor.
+İki dosya AMISCE tarzı NVRAM/setup export'u. Firmware'e özgü token ve offset'ler yeni BIOS'a doğrudan import edilmiyor.
 
 ## English
 

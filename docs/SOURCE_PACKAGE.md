@@ -2,21 +2,21 @@
 
 ## Türkçe
 
-Bu depo, driver ve app hazırlığı için **güncel kaynak**. Önceki paketleri ve doğrulama kayıtlarını geriye dönük karşılaştırma için saklıyorum.
+Driver ve app hazırlığının **aktif kaynağı bu repo**. Önceki release'leri ve doğrulama kayıtlarını karşılaştırma için arşivliyorum.
 
 ### 8 Ekim 2026 arşivi
 
 - `SSD Setup - FINAL - 2026-10-08.zip` — SHA-256: `1ddf469322ad763cf298abcb6fd271db5867df0be0e2f4c61e1cad6956a68ff5`
 - `SSD Setup - FINAL - 2026-10-08-r1.zip` (düzeltilmiş) — SHA-256: `fc22d7d0d09aa602f645a8c446a1713dd4ab5e6469132d7d70678176bce0c2c5`
 
-Bu ZIP'ler eski unattended installer dönemine ait; aktif download-only kurulumun kaynağı değiller.
+Bu ZIP'ler eski unattended installer sürümüne ait. Güncel download-only akışında kullanılmıyor.
 
 16 Ekim 2026'dan itibaren aktif kaynak GitHub'daki güncel dosyalar. Her çalıştırmanın package receipt ve SHA-256 bilgisi şuralara kaydediliyor:
 
 - `Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv`
 - `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`
 
-Hardware ve CS2 baseline: [SYSTEM.md](SYSTEM.md) ve [REFERENCE_STATE.md](REFERENCE_STATE.md). Eski `FINAL_*` raporları Git history'de.
+Hardware ve CS2 baseline'ları: [SYSTEM.md](SYSTEM.md) ve [REFERENCE_STATE.md](REFERENCE_STATE.md). Eski `FINAL_*` raporları Git history'de.
 
 ## English
 

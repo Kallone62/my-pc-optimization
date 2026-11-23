@@ -6,15 +6,15 @@
 
 ## Türkçe
 
-Bu repo, **CS2'de rekabetçi performansımı geliştirmek için kendi bilgisayar sistemimde yürüttüğüm optimizasyon çalışmalarını** içeriyor. Amacım yalnızca daha yüksek FPS almak değil; input lag'i azaltırken frametime tutarlılığını, girişlerin oyuna yansımasını ve gerçek maçtaki shot, spray ve hareket zamanlamasını birlikte iyileştirmek.
+Bu repo, **CS2'de rekabetçi performansımı geliştirmek için kendi bilgisayar sistemimde yürüttüğüm optimizasyon çalışmalarını** içeriyor. Amacım yalnızca daha yüksek FPS almak değil; input latency'yi azaltırken frametime ve input timing tutarlılığını geliştirmek; bunun one-tap, spray, counter-strafe ve micro-correction üzerindeki etkisini gerçek maçta doğrulamak.
 
-BIOS, donanım, Windows, sürücüler, oyun ayarları, giriş cihazları, monitör ve ağ yapılandırmasını aynı sistemin parçaları olarak ele alıyorum. Ayarları rastgele yükseltmek veya her tweak'i iyileştirme kabul etmek yerine, değişiklikleri mevcut yapılandırmaya karşı değerlendirip **tekrarlanabilir ve kararlı kazanımları** korumayı hedefliyorum.
+BIOS, hardware, Windows, driver, CS2, input, display ve network katmanlarını birlikte değerlendiriyorum. Her tweak'i mevcut baseline'a karşı test ediyor; **tekrarlanabilir performans kazancını ve stabiliteyi** esas alıyorum.
 
-Bu çalışma tek bir donanımda bitmiyor. Sistemimi yükselttiğimde aktif yapılandırmayı yeni donanıma göre yeniden oluşturacağım; önceki sistemlerimin ayarları ve kayıtları ise arşivde kalacak.
+Donanım upgrade'lerinde aktif baseline'ı yeni sisteme göre güncelleyeceğim. Önceki sistemlerin ayarları ve test kayıtları arşivde kalacak.
 
 **Güncel sistem:** Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz)
 
-**Önceki sistem:** Core i9-13900KF · Gigabyte Z690 Tachyon — eski BIOS kayıtları arşivde
+**Önceki sistem:** Core i9-13900KF · Gigabyte Z690 Tachyon — BIOS export'ları arşivde
 
 ### Depodaki araçlar
 
@@ -23,9 +23,9 @@ Bu çalışma tek bir donanımda bitmiyor. Sistemimi yükselttiğimde aktif yap�
 - **Windows ve CS2:** `Run_CS2_Gaming_Scripts.cmd` — Windows, device, network ve security baseline'ını uygular.
 - **Oyun yapılandırması:** `Game/autoexec.cfg` — CS2 ayarlarım.
 
-İndirme ve doğrulama sonuçları `Downloads/` altındaki raporlarda kayıtlı. Driver ve uygulama kurulumlarını bu sonuçlara göre manuel tamamlıyorum.
+Download ve doğrulama raporları `Downloads/` altında. Driver ve uygulama kurulumlarını manuel tamamlıyorum.
 
-**Not:** `00_Fresh_Install_W11_Pro.cmd`, **D:** sürücüsünü formatlayan ayrı bir Windows image kurulum aracıdır; optimizasyon launcher'ı değildir.
+**Ayrı işlem:** `00_Fresh_Install_W11_Pro.cmd`, **D:** sürücüsünü formatlayan Windows image deployment aracıdır; optimizasyon launcher'ı değildir.
 
 **Belgeler:** [Amaç ve yaklaşım](docs/OPTIMIZATION_GOALS.md) · [Sistem](docs/SYSTEM.md) · [Referans ayarlar](docs/REFERENCE_STATE.md) · [İndirme ve kurulum](docs/DOWNLOAD_ONLY.md) · [Doğrulama durumu](docs/VALIDATION.md)
 
@@ -33,15 +33,15 @@ Bu çalışma tek bir donanımda bitmiyor. Sistemimi yükselttiğimde aktif yap�
 
 ## English
 
-This repository contains the **optimization work I do on my own PC to improve competitive performance in CS2**. My goal is not simply to maximize FPS. I want lower input latency, more consistent frametimes, more responsive inputs, and reliable shot, spray, and movement timing in actual matches.
+This repository contains the **optimization work I do on my own PC to improve competitive performance in CS2**. The goal is lower input latency, consistent frametimes and input timing, and improvements that carry over to one-taps, sprays, counter-strafing and micro-corrections in actual matches—not just higher FPS.
 
-I treat BIOS, hardware, Windows, drivers, game settings, input devices, display, and networking as parts of the same system. Rather than assuming that more aggressive settings or generic tweaks are better, I compare changes against the current baseline and aim to keep **repeatable improvements without sacrificing stability or consistency**.
+I treat BIOS, hardware, Windows, drivers, game settings, input devices, display, and networking as parts of the same system. I test changes against the current baseline and keep **repeatable gains without sacrificing stability or consistency**.
 
-This is an ongoing project, not a configuration tied permanently to one hardware platform. When I upgrade my PC, the active configuration will be adapted to the new hardware, while previous configurations and records remain archived.
+Hardware upgrades lead to a new active baseline. Previous settings and test records stay archived.
 
 **Current system:** Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz)
 
-**Previous system:** Core i9-13900KF · Gigabyte Z690 Tachyon — legacy BIOS records archived
+**Previous system:** Core i9-13900KF · Gigabyte Z690 Tachyon — archived BIOS exports
 
 ### Repository tools
 
@@ -50,8 +50,8 @@ This is an ongoing project, not a configuration tied permanently to one hardware
 - **Windows and CS2:** `Run_CS2_Gaming_Scripts.cmd` — applies Windows, device, network, and security baseline settings.
 - **Game configuration:** `Game/autoexec.cfg` — my CS2 settings.
 
-Download and verification results are recorded under `Downloads/`. I use these reports to complete driver and application installation manually.
+Download and verification reports are under `Downloads/`. I install drivers and applications manually.
 
-**Note:** `00_Fresh_Install_W11_Pro.cmd` is a separate Windows image deployment tool that formats the fixed **D:** drive; it is not an optimization launcher.
+**Separate operation:** `00_Fresh_Install_W11_Pro.cmd` formats the **D:** drive for Windows image deployment; it is not an optimization launcher.
 
 **Documentation:** [Goals and approach](docs/OPTIMIZATION_GOALS.md) · [System](docs/SYSTEM.md) · [Reference settings](docs/REFERENCE_STATE.md) · [Downloads and installation](docs/DOWNLOAD_ONLY.md) · [Validation status](docs/VALIDATION.md)
