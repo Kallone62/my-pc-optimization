@@ -11,16 +11,16 @@ Bu dosya aktif **CS2 ve peripheral baseline'ımın** kayıtlı değerlerini tutu
 | Resolution | **1280×960**, 4:3 stretched |
 | Sensitivity | **0.475** |
 | Zoom sensitivity ratio | **0.9** |
-| \`fps_max\` | **0** |
+| `fps_max` | **0** |
 | VSync | Off |
 | NVIDIA G-SYNC | Off (kayıtlı oyun durumu) |
 | NVIDIA Reflex | Off (kayıtlı oyun durumu) |
 
 ### Crosshair
 
-Aktif CS2 kaynağı \`Game/autoexec.cfg\`. Crosshair, Eylül 2026 sonrasındaki pixel değişkenlerini kullanıyor:
+Aktif CS2 kaynağı `Game/autoexec.cfg`. Crosshair, Eylül 2026 sonrasındaki pixel değişkenlerini kullanıyor:
 
-\`\`\`cfg
+```cfg
 cl_crosshair_drawoutline "0"
 cl_crosshair_recoil "false"
 cl_crosshair_t "false"
@@ -34,7 +34,7 @@ cl_crosshaircolor_g "255"
 cl_crosshaircolor_b "0"
 cl_crosshaircolor_a "255"
 cl_crosshair_screen_height "960"
-\`\`\`
+```
 
 KovaaK V1 profili aktif autoexec ile eşleştirildi.
 
@@ -42,10 +42,10 @@ KovaaK V1 profili aktif autoexec ile eşleştirildi.
 
 1600 DPI için kayıtlı baseline:
 
-- \`MouseSensitivity=4\`
-- \`MouseSpeed=0\`
-- \`MouseThreshold1=0\`
-- \`MouseThreshold2=0\`
+- `MouseSensitivity=4`
+- `MouseSpeed=0`
+- `MouseThreshold1=0`
+- `MouseThreshold2=0`
 
 Desktop pointer speed korunuyor; Windows mouse acceleration / EPP yolu kapalı.
 
@@ -61,4 +61,4 @@ Orijinal screenshot'lar kaynak arşivinde; bu dosyada tekrar uygulanabilir değe
 
 This file records my active **CS2 and peripheral baseline**, not a list of proven optimal settings. The CS2 values, pixel crosshair commands, mouse and keyboard settings, and 400 Hz display state are listed above.
 
-\`Game/autoexec.cfg\` is the authoritative CS2 configuration; the KovaaK V1 profile is synchronized to it. The desktop mouse values preserve the configured pointer speed while disabling the Windows acceleration/EPP path. Original setup screenshots remain in the source archive.
+`Game/autoexec.cfg` is the authoritative CS2 configuration; the KovaaK V1 profile is synchronized to it. The desktop mouse values preserve the configured pointer speed while disabling the Windows acceleration/EPP path. Original setup screenshots remain in the source archive.

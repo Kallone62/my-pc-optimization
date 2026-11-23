@@ -26,7 +26,7 @@ Bu belgede CS2 için kullandığım **güncel donanım ve peripheral baseline'ı
 | --- | --- |
 | Monitor | BenQ ZOWIE XL2566X+; 400 Hz |
 | Mouse | Logitech G PRO X Superlight 2 DEX; 1600 DPI, wireless 2000 Hz, LOD High |
-| CS2 sensitivity | \`0.475\`; zoom ratio \`0.9\` |
+| CS2 sensitivity | `0.475`; zoom ratio `0.9` |
 | Keyboard | Wooting 80HE; Tachyon Mode / True 8K polling |
 | Actuation | Genel tuşlar 0.5 mm; Ctrl/Shift 0.3 mm; WASD 0.1 mm |
 | Rapid Trigger | WASD + Ctrl, 0.1 mm |
@@ -39,7 +39,7 @@ Bu belgede CS2 için kullandığım **güncel donanım ve peripheral baseline'ı
 | --- | --- |
 | Display | Fullscreen, 4:3 stretched, 1280×960, 400 Hz |
 | V-Sync / G-SYNC / NVIDIA Reflex | Off (kayıtlı oyun durumu) |
-| FPS cap | \`fps_max 0\`; screenshot'ta menu cap 200 |
+| FPS cap | `fps_max 0`; screenshot'ta menu cap 200 |
 | MSAA | 8× |
 | Shadows | Global Low; Dynamic Shadows All |
 | Model / Texture / Shader / Particle Detail | Low |
@@ -53,7 +53,7 @@ Bunlar o anda kaydedilmiş **baseline** değerleri. Bir ayarın en iyi sonucu ve
 
 Intel Core i9-13900KF · Gigabyte Z690 Tachyon · aynı G.Skill/Hynix A-Die 2×16 GB DDR5 kit · RTX 3080 · Samsung 990 Pro 1 TB · Lian Li GALAHAD 360 · Lian Li LANCOOL III · FSP Hydro PTM PRO.
 
-Eski BIOS export'ları: \`.bios/legacy/Z690-Tachyon/\`.
+Eski BIOS export'ları: `.bios/legacy/Z690-Tachyon/`.
 
 ## English
 
@@ -61,7 +61,7 @@ This is my **current hardware and peripheral baseline** for competitive CS2. Fut
 
 The tables above contain the recorded hardware, input and display values. The G.Skill DDR5 kit is the same physical kit previously described as “Hynix A-Die 2×16” on the Z690 platform; it was not replaced during the platform migration. Display values are a **recorded baseline**, not a claim of optimality.
 
-**Previous system:** Intel Core i9-13900KF, Gigabyte Z690 Tachyon, the same DDR5 kit, RTX 3080, Samsung 990 Pro 1 TB, Lian Li GALAHAD 360, Lian Li LANCOOL III and FSP Hydro PTM PRO. BIOS exports are stored under \`.bios/legacy/Z690-Tachyon/\`.
+**Previous system:** Intel Core i9-13900KF, Gigabyte Z690 Tachyon, the same DDR5 kit, RTX 3080, Samsung 990 Pro 1 TB, Lian Li GALAHAD 360, Lian Li LANCOOL III and FSP Hydro PTM PRO. BIOS exports are stored under `.bios/legacy/Z690-Tachyon/`.
 
 ## Profil / Profile
 
