@@ -2,7 +2,7 @@
 setlocal EnableExtensions DisableDelayedExpansion
 title SSD Setup - Application Download and Verify Only
 set "PACK_ROOT=%~dp0"
-set "SCRIPT=%PACK_ROOT%.scripts\Install-PostFormat-Apps.ps1"
+set "SCRIPT=%PACK_ROOT%.scripts\Download-PostFormat-Apps.ps1"
 if not exist "%SCRIPT%" (echo ERROR: Missing script: "%SCRIPT%" & pause & exit /b 2)
 echo ====================================================
 echo   APPLICATION DOWNLOAD + VERIFY ONLY - NO INSTALL

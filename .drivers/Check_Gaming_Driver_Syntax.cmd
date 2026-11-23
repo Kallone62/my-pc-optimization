@@ -1,9 +1,9 @@
 @echo off
 setlocal EnableExtensions DisableDelayedExpansion
-title Gaming Driver Installer v2.3.6 - Syntax Check
+title Gaming Driver Downloader - Syntax Check
 
 set "ROOT=%~dp0"
-set "DRIVER_SCRIPT=%ROOT%Install-Gaming-Drivers-v2-LatestOfficial.ps1"
+set "DRIVER_SCRIPT=%ROOT%Download-Gaming-Drivers.ps1"
 set "POWERSHELL_EXE=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
 
 if not exist "%DRIVER_SCRIPT%" (
@@ -25,7 +25,7 @@ if not exist "%POWERSHELL_EXE%" (
 )
 
 echo ============================================================
-echo   GAMING DRIVER INSTALLER v2.3.6 - POWERSHELL SYNTAX CHECK
+echo   GAMING DRIVER DOWNLOADER - POWERSHELL SYNTAX CHECK
 echo ============================================================
 echo.
 "%POWERSHELL_EXE%" -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^

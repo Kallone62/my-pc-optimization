@@ -1,40 +1,22 @@
-DRIVER DOWNLOAD & VERIFY ONLY - v3.0
-==================================
+DRIVER DOWNLOAD + VERIFY ONLY
+================================
 Launcher: Download_Gaming_Drivers.cmd
-Legacy launchers Run_Gaming_Drivers_v2.cmd and Audit_Gaming_Drivers_v2.cmd
-now invoke the SAME download-only launcher. No Install mode exists.
+PowerShell source: Download-Gaming-Drivers.ps1
+Syntax checker: Check_Gaming_Driver_Syntax.cmd
 
-Targets: ASUS ROG STRIX B850-I / Ryzen 7 9800X3D / RTX 3080 12GB.
-Sources: official AMD/ASUS/NVIDIA endpoints + bundled ZOWIE WHQL archive.
-Checks: current vendor version, HTTPS host allowlist, ASUS SHA256, vendor
-Authenticode where available, matching hardware ID/INF and WHQL CAT signature
-for bundled ZOWIE monitor. No pnputil add-driver or vendor setup execution.
+The downloader does not install or bind drivers. It prepares official packages
+and writes Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv with validation
+results, hashes and manual installation notes. A FAILED component is not ready.
 
-Outputs (relative to SSD Setup regardless of installation location):
-  Downloads\Drivers\
-  Work\Drivers\Extracted\
-  Logs\Drivers\
+Suggested manual order:
+1. AMD chipset
+2. Intel I226-V LAN
+3. Realtek UCM only if matching ACPI device is present
+4. AMD iGPU OPTIONAL: only for a separately tested iGPU-driver configuration
+5. NVIDIA RTX 3080 WHQL Graphics Driver only
+6. ZOWIE XL2566X+ WHQL monitor INF
+7. NVIDIA Control Panel through Microsoft Store, separately
 
-Open Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv for the exact files,
-hashes, source URLs and manual notes.
-
-Suggested MANUAL order:
-1. AMD chipset (reboot, verify package).
-2. Intel I226-V LAN (install matching INF, verify device).
-3. Realtek UCM only if ACPI\RTK5452 present.
-4. AMD iGPU (only matching driver INF; official full Adrenalin EXE is a
-   container, NOT a driver-only offline package; do not blindly run it).
-5. NVIDIA WHQL Game Ready (Custom setup: Graphics Driver only, no NVIDIA
-   App and no HD Audio; reboot).
-6. ZOWIE XL2566X+ WHQL matching INF.
-7. NVIDIA Control Panel HSA through Microsoft Store manually.
-
-No setup is executed, no PnP device is rebound, no driver guard/WU policies
-are changed. Any unresolved version, hash, signature or device identity
-must be treated as FAILED, never as READY.
-
-Prerequisite: if the new Windows image lacks a working inbox I226-V network
-driver, bootstrap a matching LAN INF once before using the online downloader.
-
-See DOWNLOAD_ONLY.md at the SSD Setup root. Windows live runtime testing
-is required; source/static review does not prove downloads work forever.
+The AMD Adrenalin EXE is not a pre-extracted driver-only INF package.
+Review the exact hardware ID/INF before manual driver installation.
+See DOWNLOAD_ONLY.md and VALIDATION.md at the repository root.

@@ -1,17 +1,21 @@
-# Validation
+# Validation state
 
-## 2026-10-16: download-only migration (current)
+The canonical downloaders are `.drivers/Download-Gaming-Drivers.ps1`
+and `.scripts/Download-PostFormat-Apps.ps1`; CMD wrappers and the release
+manifest must reference these exact paths.
 
-New driver and application preparation sources replace the prior unattended install flows.
+The release workflow verifies required files and nested ZIP integrity.
+It excludes the destructive Windows imaging launcher.
 
-Static checks:
-- Both package preparation scripts have no installer process launch, `winget install`, PnP binding, uninstall or Windows policy mutation calls.
-- Driver resolver retains target hardware assertions, vendor host allowlist, ASUS hash, AMD/NVIDIA Authenticode, ZOWIE bundled archive SHA-256 and catalog verification, and device/INF matching.
-- App downloader uses `winget download`, direct HTTPS publisher downloads and per-file receipts. Failed hash/source/signature checks are reported as FAILED.
-- Old driver CMD aliases point to the download-only launcher; old app CMD alias points to the download-only launcher. The unattended Spotify helper is removed.
-- Downloads, logs and extraction paths are rooted relative to SSD Setup.
-- Removed stale static `MANIFEST.sha256` from earlier ZIP revisions: runtime downloads produce current per-file SHA-256 CSV manifests, not an outdated immutable hash list.
+The October 2026 legacy `FINAL_AUDIT.txt` and `FINAL_README.txt` described
+an earlier unattended installer and are retained in Git history, not as
+current validation records.
 
-**Not yet validated on target Windows 11:** PowerShell 5.1 AST parsing, live vendor page layout, current WinGet package availability/download support, signatures, INF bindings, Microsoft Store HSA manual install, post-reboot state or CS2 stability. No claim of an end-to-end working deployment until those tests pass.
+## Still requires real Windows verification
 
-Historical earlier ZIP/linkage audits remain described in [SOURCE_PACKAGE.md](SOURCE_PACKAGE.md) and source `FINAL_AUDIT.txt`; they refer to the 2026-10-08 *installer* version and must not be mistaken for this downloader's runtime validation.
+- PowerShell 5.1 syntax and execution.
+- Vendor URLs, downloads, hashes/signatures, INF/hardware matching.
+- Post-reboot driver, NIC, USB and security state.
+- CS2/FACEIT gameplay and input/frametime-tail A/B tests.
+
+Static inspection alone is **not** proof of working or faster runtime behavior.

@@ -37,7 +37,7 @@ jobs:
           cp -a .drivers/Assets/Monitor "$ROOT/.drivers/Assets/Monitor"
 
           cp .drivers/Download_Gaming_Drivers.cmd "$ROOT/.drivers/"
-          cp .drivers/Install-Gaming-Drivers-v2-LatestOfficial.ps1 "$ROOT/.drivers/"
+          cp .drivers/Download-Gaming-Drivers.ps1 "$ROOT/.drivers/"
           cp Download_PostFormat_Apps.cmd "$ROOT/"
           cp Run_CS2_Gaming_Scripts.cmd "$ROOT/"
           cp DOWNLOAD_ONLY.md "$ROOT/"
@@ -81,9 +81,9 @@ jobs:
           root=Path("dist/SSD Setup")
           required = [
               ".drivers/Download_Gaming_Drivers.cmd",
-              ".drivers/Install-Gaming-Drivers-v2-LatestOfficial.ps1",
+              ".drivers/Download-Gaming-Drivers.ps1",
               ".drivers/Assets/Monitor/XL2566X+_WHQL dirver_V001_Windows_240605180238.7z",
-              ".scripts/Install-PostFormat-Apps.ps1",
+              ".scripts/Download-PostFormat-Apps.ps1",
               ".scripts/CS2-GamingOnly-Pro-v1.0.9.ps1",
               ".scripts/I226V_Baseline_v2.ps1",
               ".scripts/Gaming-Device-Disable-v2.ps1",
