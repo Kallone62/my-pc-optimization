@@ -5,7 +5,7 @@ WinGet's download command checks the installer SHA-256 against the manifest.
 Manual installation is always separate.
 #>
 [CmdletBinding()]
-param()
+param([ValidateSet('WinInet','Default')][string]$WinGetDownloader='WinInet')
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
@@ -143,6 +143,68 @@ function Invoke-TechPowerUpVisualCpp {
  }
 }
 
+# Temporarily select WinINet for this run; restore user's previous WinGet settings.
+$script:WinGetSettingsRestore=$null
+function Enter-WinGetWinInet {
+ if($WinGetDownloader -eq 'Default'){Write-Host '[WinGet] Using the existing downloader.';return}
+ $root=Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState'
+ if(-not (Test-Path -LiteralPath $root -PathType Container)){
+  Write-Warning 'Packaged WinGet user settings not found; leaving backend unchanged.'
+  return
+ }
+ $path=Join-Path $root 'settings.json'
+ $existed=Test-Path -LiteralPath $path -PathType Leaf
+ $before=if($existed){[IO.File]::ReadAllBytes($path)}else{[byte[]]@()}
+ $backup=$null
+ try{
+  $obj=if($existed){
+   $json=[IO.File]::ReadAllText($path)
+   if([string]::IsNullOrWhiteSpace($json)){throw 'Empty existing settings.json.'}
+   ConvertFrom-Json -InputObject $json -ErrorAction Stop
+  }else{[pscustomobject]@{}}
+  if($null -eq $obj -or $obj -isnot [pscustomobject]){throw 'WinGet settings must be a JSON object.'}
+  if(-not $obj.PSObject.Properties['network']){
+   $obj | Add-Member -MemberType NoteProperty -Name 'network' -Value ([pscustomobject]@{})
+  }
+  if($obj.network -isnot [pscustomobject]){throw 'Invalid WinGet network settings.'}
+  if($obj.network.PSObject.Properties['downloader']){
+   if([string]$obj.network.downloader -eq 'wininet'){Write-Host '[WinGet] WinINet already selected.';return}
+   $obj.network.downloader='wininet'
+  }else{
+   $obj.network | Add-Member -MemberType NoteProperty -Name 'downloader' -Value 'wininet'
+  }
+  $next=ConvertTo-Json -InputObject $obj -Depth 25 -ErrorAction Stop
+  $backup=Join-Path $LogRoot "winget-settings-before-$stamp.bin"
+  [IO.File]::WriteAllBytes($backup,$before)
+  [IO.File]::WriteAllText($path,$next,[Text.UTF8Encoding]::new($false))
+  $hash=(Get-FileHash -LiteralPath $path -Algorithm SHA256 -ErrorAction Stop).Hash
+  $script:WinGetSettingsRestore=[pscustomobject]@{
+   Path=$path;Existed=$existed;Before=$before;AfterHash=$hash;Backup=$backup
+  }
+  Write-Host '[WinGet] WinINet selected for this run; original settings backed up.'
+ }catch{
+  Write-Warning ("Cannot set temporary WinINet backend: "+$_.Exception.Message)
+  # Restore immediately if settings changed before the override could initialize.
+  if($existed){[IO.File]::WriteAllBytes($path,[byte[]]$before)}
+  elseif(Test-Path -LiteralPath $path){Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue}
+ }
+}
+function Exit-WinGetWinInet {
+ $item=$script:WinGetSettingsRestore
+ if(-not $item){return}
+ try{
+  $now=(Get-FileHash -LiteralPath $item.Path -Algorithm SHA256 -ErrorAction Stop).Hash
+  if($now -ne $item.AfterHash){
+   Write-Warning "WinGet settings changed during this run; backup preserved: $($item.Backup)"
+   return
+  }
+  if($item.Existed){[IO.File]::WriteAllBytes($item.Path,[byte[]]$item.Before)}
+  else{Remove-Item -LiteralPath $item.Path -Force -ErrorAction Stop}
+  Remove-Item -LiteralPath $item.Backup -Force -ErrorAction SilentlyContinue
+  Write-Host '[WinGet] Previous user settings restored.'
+ }catch{Write-Warning ("WinGet restore failed; backup: $($item.Backup). "+$_.Exception.Message)}
+}
+
 try {
  Write-Host 'APP PACKAGE DOWNLOAD + VERIFY ONLY (never install)'
  # Independent official downloads first, including when WinGet is missing.
@@ -153,6 +215,7 @@ try {
  $wingetReady=$false
  if($winget){
   $script:WinGetPath=$winget.Source
+  Enter-WinGetWinInet
   try{
    $previous=$ErrorActionPreference
    try{
@@ -190,6 +253,7 @@ try {
  Add-Entry 'ExitLag optional' 'MANUAL LINK' 'https://www.exitlag.com/download/' '' '' 'Optional, download/install manually.'
 } catch {Fail-Entry 'Preflight' $_.Exception.Message}
 finally{
+ Exit-WinGetWinInet
  $csv=Join-Path $DownloadRoot 'APP_MANUAL_INSTALL_ORDER.csv'
  $json=Join-Path $LogRoot "app-download-$stamp.json"
  $script:Rows | Export-Csv -LiteralPath $csv -NoTypeInformation -Encoding UTF8
