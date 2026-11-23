@@ -1,4 +1,4 @@
-# CS2 PC Optimization
+# Espor Sistemi Optimizasyonu / Esports System Optimization
 
 [Türkçe](#türkçe) · [English](#english)
 
@@ -6,9 +6,11 @@
 
 ## Türkçe
 
-Bu depo, **kendi bilgisayar sistemimin Windows 11 ve Counter-Strike 2 kurulum ve optimizasyon yapılandırmalarını** saklar. Sistemimi yükselttikçe güncel ayarları yeni donanıma göre düzenler, önceki sistemlerin yapılandırmalarını ise arşivde korurum.
+CS2 odaklı **kişisel espor sistemi optimizasyonu** arşivim. Mevcut ve önceki sistemlerimin ayarlarını saklar, donanım yükselttikçe aktif yapılandırmayı güncellerim.
 
 **Güncel sistem:** AMD Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz).
+
+**Önceki sistem:** Intel Core i9-13900KF · Gigabyte Z690 Tachyon (arşiv).
 
 ### Başlangıç
 
@@ -25,9 +27,11 @@ Bu depo, **kendi bilgisayar sistemimin Windows 11 ve Counter-Strike 2 kurulum ve
 
 ## English
 
-This repository stores the **Windows 11 and Counter-Strike 2 setup and optimization configurations for my personal PC**. As I upgrade my hardware, I adapt the active configuration to the new system and preserve previous configurations as an archive.
+My personal archive of **CS2-focused esports system optimization**. It preserves configurations for both current and previous systems while the active setup evolves with hardware upgrades.
 
 **Current system:** AMD Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · ZOWIE XL2566X+ (400 Hz).
+
+**Previous system:** Intel Core i9-13900KF · Gigabyte Z690 Tachyon (archived).
 
 ### Getting started
 
