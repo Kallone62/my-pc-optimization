@@ -1,5 +1,5 @@
-﻿# Intel I226-V competitive baseline v2.4 - comprehensive supported NIC power lockdown
-# Delta-only outside the NIC power-management stack.
+﻿# Intel I226-V baseline v2.5 — targeted changes, no blanket NDIS power disable
+# Keep the previous Device Manager baseline; do not change other NDIS PM features.
 #
 # Changes:
 #   - Energy Efficient Ethernet       -> Disabled
@@ -8,20 +8,17 @@
 #   - Reduce Speed On Power Down      -> Disabled, if exposed
 #   - Ultra Low Power Mode            -> Disabled, if exposed
 #   - Idle power down restriction     -> Only idle when user isn't present, if exposed
-#   - Windows/NDIS power management   -> Disabled comprehensively through supported NetAdapter APIs
-#       * Selective Suspend
-#       * D0 Packet Coalescing
-#       * Device Sleep on Disconnect
-#       * ARP offload
-#       * NS offload
-#       * Rsn Rekey offload, if supported
-#       * Wake on Magic Packet
-#       * Wake on Pattern
-#       * "Allow the computer to turn off this device" master state
+#   - Allow computer to turn off this device -> Disabled (master checkbox only)
 #   - NetBIOS over TCP/IP             -> Disabled on this I226-V only
 #
-# DOES NOT touch Interrupt Moderation / Interrupt Moderation Rate (ITR), RSS,
-# checksum/segmentation offloads, Speed & Duplex, or system-wide PCIe ASPM.
+# Does NOT modify:
+#   - Selective Suspend, D0 Packet Coalescing, Device Sleep on Disconnect
+#   - ARP/NS offloads, RsnRekey, Wake on Magic Packet/Pattern
+#   - Interrupt Moderation/ITR, RSS, checksum/segmentation offloads
+#   - Speed & Duplex, system-wide PCIe ASPM
+#
+# Deliberately avoid Disable-NetAdapterPowerManagement without a feature switch:
+# that command changes every supported NDIS power-management feature.
 
 $ErrorActionPreference = "Stop"
 
@@ -198,47 +195,28 @@ function Write-I226PowerSnapshot {
     }
 }
 
-function Disable-I226PowerManagement {
+function Ensure-I226MasterPowerDisabled {
     $before = Get-I226PowerManagement
 
     Write-Host '[INFO] Windows/NDIS PM state before:' -ForegroundColor Cyan
     Write-I226PowerSnapshot -State $before -Prefix '       '
 
-    # Microsoft documents that calling Disable-NetAdapterPowerManagement without
-    # individual PM switches disables every power-management feature supported
-    # by this adapter. NoRestart keeps this script to one controlled restart.
-    try {
-        Disable-NetAdapterPowerManagement `
-            -Name $nic.Name `
-            -NoRestart `
-            -Confirm:$false `
-            -ErrorAction Stop | Out-Null
-
-        $script:changed = $true
-        Write-Host '[SET]  All supported Windows/NDIS adapter power-management features -> Disabled' -ForegroundColor Green
-    }
-    catch {
-        throw ("Comprehensive Disable-NetAdapterPowerManagement failed: " + $_.Exception.Message)
+    if (-not $before.PSObject.Properties['AllowComputerToTurnOffDevice']) {
+        throw 'I226-V driver does not expose AllowComputerToTurnOffDevice.'
     }
 
-    # Windows 11 can keep the Device Manager master checkbox logically separate.
-    # Set that exact state on the adapter PM object as a second supported path.
-    $pm = Get-I226PowerManagement
-
-    if (-not $pm.PSObject.Properties['AllowComputerToTurnOffDevice']) {
-        throw 'I226-V power-management object does not expose AllowComputerToTurnOffDevice.'
-    }
-
-    $master = [string]$pm.AllowComputerToTurnOffDevice
-
+    $master = [string]$before.AllowComputerToTurnOffDevice
     if ($master -eq 'Unsupported') {
         throw 'I226-V driver reports AllowComputerToTurnOffDevice as Unsupported.'
     }
 
+    # Match the previously used Device Manager master checkbox only.
+    # Unlike a blanket Disable-NetAdapterPowerManagement call, this does not
+    # intentionally disable Selective Suspend and subordinate NDIS PM features.
     if ($master -ne 'Disabled') {
         try {
-            $pm.AllowComputerToTurnOffDevice = 'Disabled'
-            $pm | Set-NetAdapterPowerManagement -NoRestart -ErrorAction Stop | Out-Null
+            $before.AllowComputerToTurnOffDevice = 'Disabled'
+            $before | Set-NetAdapterPowerManagement -NoRestart -ErrorAction Stop | Out-Null
             $script:changed = $true
             Write-Host '[SET]  Allow computer to turn off I226-V -> Disabled' -ForegroundColor Green
         }
@@ -249,11 +227,6 @@ function Disable-I226PowerManagement {
     else {
         Write-Host '[OK]   Allow computer to turn off I226-V -> Disabled (already set)' -ForegroundColor Green
     }
-
-    # Once the master state is Disabled, Microsoft's CIM contract says the
-    # remaining PM property values are undefined. Therefore the final hard check
-    # is the master state after the adapter restart; the comprehensive supported
-    # disable call above is still executed before that master state is enforced.
 }
 
 function Assert-I226MasterPowerDisabled {
@@ -269,7 +242,7 @@ function Assert-I226MasterPowerDisabled {
     }
 
     Write-Host '[VERIFIED] I226-V master device power-off permission = Disabled' -ForegroundColor Green
-    Write-Host '[VERIFIED] Comprehensive supported NetAdapter PM disable command completed.' -ForegroundColor Green
+    Write-Host '[INFO] Subordinate NDIS power-management features were not changed by this script.' -ForegroundColor Yellow
 }
 
 $null = Set-AdvancedRegistryValueSafely `
@@ -308,9 +281,8 @@ $null = Set-AdvancedRegistryValueSafely `
     -RegistryValue "1" `
     -DisplayNames @("Idle power down restriction")
 
-# Disable the Windows/NDIS power-management layer independently of IdleRestriction.
-# This removes the old v2.1 behavior where Selective Suspend was only a fallback.
-Disable-I226PowerManagement
+# Preserve the previous Device Manager master power-off checkbox without blanket PM disable.
+Ensure-I226MasterPowerDisabled
 
 Set-I226NetbiosDisabled
 
@@ -393,7 +365,7 @@ if ($netbiosCfg.Count -eq 1) {
 
 Write-Host "Interrupt Moderation / ITR were NOT modified." -ForegroundColor Yellow
 Write-Host "RSS / checksum offloads / LSO / Speed & Duplex were NOT modified." -ForegroundColor Yellow
-Write-Host "Windows/NDIS PM features were disabled comprehensively through Disable-NetAdapterPowerManagement." -ForegroundColor Yellow
+Write-Host "Selective Suspend and subordinate NDIS PM features were NOT modified." -ForegroundColor Yellow
 
 Write-Host "System-wide PCIe ASPM was NOT modified." -ForegroundColor Yellow
 
