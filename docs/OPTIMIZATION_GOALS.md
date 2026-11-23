@@ -8,7 +8,7 @@
 
 ### Asıl hedefim
 
-Bu projede bilgisayarımı yalnızca yüksek FPS üreten bir makineye dönüştürmeye çalışmıyorum. **Amacım, CS2'de verdiğim kararların ve mouse ve klavye inputlarımın oyuna mümkün olduğunca hızlı, doğru ve tutarlı yansıdığı bir sistem oluşturmak.** Bunun gerçek karşılığı, kritik anlarda one-tap, spray, counter-strafe ve micro-correction hareketlerini sistemin değişken davranışına takılmadan uygulayabilmek.
+Bu projede bilgisayarımı yalnızca yüksek FPS üreten bir makineye dönüştürmeye çalışmıyorum. **Amacım, CS2'de verdiğim kararların ve mouse/klavye inputlarımın oyuna mümkün olduğunca hızlı, doğru ve tutarlı yansıdığı bir sistem oluşturmak.** Bunun gerçek karşılığı, kritik anlarda one-tap, spray, counter-strafe ve micro-correction'ları sistemin değişken davranışına takılmadan uygulayabilmek.
 
 Bunun için input cihazı → Windows → game engine → render → display zincirini; ağ üzerinden sunucuya iletilen eylemleri ise ayrı ama ilişkili bir zincir olarak inceliyorum. BIOS, CPU, bellek, GPU, sürücüler, USB, fare, klavye, monitör ve ağ ayarları tek başına değil, **birbirleriyle nasıl çalıştıklarına göre** değerlendirilmeli.
 
@@ -20,7 +20,7 @@ Ortalama FPS sistemin ne kadar hızlı kare üretebildiğini gösterir; fakat **
 
 ### “Mermi gitmiyor” derken neyi kastediyorum?
 
-Dar anlamda, nişangâh rakibin üzerindeyken isabet etmiş gibi görünen bir atışın server tarafında hit registration / damage olarak onaylanmaması. Daha geniş anlamda ise nişan, ateş etme, durma, yön değiştirme ve spray inputlarımın **niyet ettiğim zamanlama veya konumdan sapmış gibi hissettirmesi**.
+Dar anlamda, nişangâh rakibin üzerindeyken isabet etmiş gibi görünen bir atışın server'da hit olarak kaydedilmemesi ve damage oluşmaması. Daha geniş anlamda ise nişan, ateş etme, durma, yön değiştirme ve spray inputlarımın **niyet ettiğim zamanlama veya konumdan sapmış gibi hissettirmesi**.
 
 Bu his tek başına ağ ya da donanım hatasının kanıtı değil. Gerçek nişan hatası, hareket hâlinde ateş etme, weapon spread, display latency, frametime spike'ları, packet loss veya client–server timing farkları birbirine benzeyen sonuçlar üretebilir. **Ekranda gördüğüm frame, server'ın aynı anda aynı durumu gördüğünü kanıtlamaz.** Önce hangi halkayı ölçtüğümü ayırmam gerekiyor.
 
@@ -30,7 +30,7 @@ Bu his tek başına ağ ya da donanım hatasının kanıtı değil. Gerçek niş
 
 **2. Counter-strafe ve spray:** Bir yönde hareket ederken ters yöne basıp durduğum ve ateş ettiğim anın tutarlı olması gerekiyor. Klavyenin actuation / Rapid Trigger ayarını daha agresif yapmak otomatik olarak daha iyi değil; istenmeyen inputlar veya timing varyansı artabilir. Aynı hareket–ateş rutiniyle önceki ve yeni ayarı karşılaştırır, isabet veya hissi birkaç pozisyona dayanarak kesinleştirmem.
 
-**3. Polling rate ve USB yükü:** Farenin polling rate'ini 2000 Hz'den 8000 Hz'e yükseltmek teoride input report interval'ını kısaltabilir. Ama işlemci, USB ve oyun yükü altında daha fazla dalgalanma yaratıyorsa gerçek avantaj kaybolabilir. Karar, “8000 daha büyük” mantığıyla değil; aynı koşullarda input latency, frametime tail değerleri ve stabiliteyle verilir.
+**3. Polling rate ve USB yükü:** Farenin polling rate'ini 2000 Hz'den 8000 Hz'e yükseltmek teoride rapor aralığını kısaltabilir. Ama işlemci, USB ve oyun yükü altında daha fazla dalgalanma yaratıyorsa gerçek avantaj kaybolabilir. Karar, “8000 daha büyük” mantığıyla değil; aynı koşullarda input latency, frametime spike'ları ve stabiliteyle verilir.
 
 **4. BIOS, bellek ve CPU ayarları:** Daha agresif bellek zamanlaması veya CPU politikası benchmark'ta kazanç gösterebilir. Buna karşılık oyun sırasında microstutter, kararsız clock davranışı veya açılışlar arasında tutarsızlık ortaya çıkıyorsa bu ayarı tutmam. Ölçüm, kararlılık ve yeniden başlatma sonrası tekrarlanabilirlik birlikte geçerli olmalı.
 
@@ -46,9 +46,9 @@ Bir katmandaki kazanç başka bir katmandaki tutarlılığı bozuyorsa bütün z
 
 ### Bu deponun amacı ve sürekliliği
 
-Bu depo, herkese uygulanacak evrensel bir tweak listesi değil; kendi sistemim için **ölçülerek geliştirilen, gerektiğinde geri alınabilen ve yeniden kurulabilen** bir optimizasyon baseline'ının kaydı. Şu an aktif platformum Ryzen 7 9800X3D / ASUS B850-I. Önceki i9-13900KF / Z690 Tachyon kayıtları arşivde duruyor. Gelecekte donanım yükselttiğimde eski sonuçları kendi koşullarıyla koruyup yeni sistemi yeniden değerlendireceğim.
+Bu depo, herkese uygulanacak evrensel bir tweak listesi değil; kendi sistemim için **ölçülerek geliştirilen, gerektiğinde geri alınabilen ve yeniden kurulabilen** aktif baseline'ımın ve önceki denemelerimin kaydı. Şu an aktif platformum Ryzen 7 9800X3D / ASUS B850-I. Önceki i9-13900KF / Z690 Tachyon kayıtları arşivde duruyor. Gelecekte donanım yükselttiğimde eski sonuçları kendi koşullarıyla koruyup yeni sistemi yeniden değerlendireceğim.
 
-**Başarı ölçütüm:** Daha yüksek bir benchmark skoru değil; başlangıç baseline'ına kıyasla daha hızlı, daha tutarlı ve kararlı olduğu gösterilen, gerçek CS2 oynanışına katkısı sınanmış bir sistem.
+**Başarı ölçütüm:** Daha yüksek bir benchmark skoru değil; ilk baseline'a kıyasla daha hızlı, daha tutarlı ve kararlı olduğu gösterilen, gerçek CS2 oynanışına katkısı sınanmış bir sistem.
 
 İlgili kayıtlar: [Güncel sistem](SYSTEM.md) · [Referans ayarlar](REFERENCE_STATE.md) · [Doğrulama durumu](VALIDATION.md).
 
