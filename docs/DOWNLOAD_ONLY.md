@@ -1,37 +1,90 @@
-# Download + Verify Only: manual deployment
+# Sürücü ve Uygulama Hazırlığı / Driver and App Downloads
 
-The intent is to reduce uncontrolled variables while debugging CS2 freezes, focus loss/alt-tab behavior and intermittent latency. **Not** proof that a previously observed spike originated from a driver.
+Bu katmanın amacı **paketleri indirmek, doğrulamak ve kurulumu ayrı tutmak**. Böylece hangi driver veya uygulamanın sistem davranışını değiştirdiğini kontrollü test edebilirim.
 
-## Scope
+The purpose of this layer is to **download and verify packages while keeping installation separate**, so driver and application changes can be tested independently.
 
-- Only official publisher/vendor download sources; current versions resolved at execution when available.
-- Package prep scripts perform no `winget install`, `Start-Process` installer, `pnputil /add-driver`, app uninstall, driver-policy modification or task scheduling.
-- Downloads, logs, extracted archives and receipts live below the **current SSD Setup root**; they do not depend on `C:` or `D:`.
-- Auto-download failures are explicit. No `--ignore-security-hash`, guessed versions or defaulting to an unverified package.
-- Other baseline scripts and the destructive Windows-image deployment script are outside this limited scope.
+## Türkçe
 
-## Drivers
+### Download workflow
 
-Launch `.drivers\Download_Gaming_Drivers.cmd`. The downloader checks that it runs on the intended B850-I / 9800X3D / RTX 3080 (PCI DEV_220A) system, resolves the official current files, and writes receipts. ASUS packages are verified against SHA-256 from the matching ASUS page record. AMD/NVIDIA EXEs require valid matching Authenticode signatures. The monitor archive is pinned to a known SHA-256 and catalog verification.
+- Driver paketleri resmî vendor kaynaklarından, Visual C++ All-in-One arşivi TechPowerUp'tan indiriliyor.
+- Paketler \`Downloads/\`, log ve receipt'ler \`Logs/\` altında; sürücü harfine bağlı değiller.
+- Doğrudan HTTPS transferlerinde \`curl.exe\`, retry ve sunucu desteklediğinde resume kullanılıyor. Doğrulanmış dosyalar uygun koşullarda tekrar indirilmiyor.
+- WinGet geçici olarak \`wininet\` backend'iyle çalışıyor. Normal çıkışta eski ayarlar geri yükleniyor; kesinti ihtimali için yedek tutuluyor. A/B karşılaştırması için \`-WinGetDownloader Default\` kullanılabilir.
+- SHA-256, Authenticode ve gerektiğinde vendor hash / catalog doğrulaması yapılıyor. \`FAILED\` durumundaki paket hazır değil.
+- Driver ve app downloader'ları **kurulum yapmıyor**. NVIDIA Control Panel'in ayrı CMD'si ise Store üzerinden kurulum yapıyor.
 
-Inspect `Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv`. A failure row means NOT READY. Suggested manual progression: AMD chipset → LAN I226-V → Realtek UCM if device exists → AMD iGPU driver-only if explicitly included in the test baseline → NVIDIA WHQL custom graphics-only → ZOWIE monitor INF → post-driver NVIDIA Control Panel CMD (<https://apps.microsoft.com/detail/9NF8H0H7WMLT>). Reboot and inspect Device Manager, installed versions and Event Viewer as appropriate. Do not run the full AMD Adrenalin installer just to get driver-only behavior: its signed EXE is a package container, not a pre-extracted driver-only deliverable. If a verified matching INF cannot be selected manually, defer the iGPU step.
+### Driver'lar
 
-For freshly imaged Windows without working I226-V inbox Ethernet, manually bootstrap the LAN INF from a trusted previously prepared package before online download.
+\`.drivers\Download_Gaming_Drivers.cmd\`, güncel **B850-I / 9800X3D / RTX 3080 (PCI DEV_220A)** sistemine uygun paketleri hazırlıyor.
 
-## Apps
+Sonuç: \`Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv\`.
 
-Launch `Download_PostFormat_Apps.cmd`. WinGet downloads temporarily use the documented `wininet` backend instead of Delivery Optimization; the original user's WinGet settings are restored byte-for-byte when the script exits normally, with a local recovery backup if interrupted. For an A/B comparison, run the PowerShell downloader with `-WinGetDownloader Default`. It uses `winget download` (never `winget install`) for Chrome, AutoHotkey, Steam, FACEIT AC and Spotify. Visual C++ is downloaded as **one current TechPowerUp All-in-One ZIP** directly from the publisher's `closest-dl` mirror, with the version and SHA-256 dynamically read from TechPowerUp's official page and checked after downloading. Extract the verified ZIP and run its bundled `install_all.bat` as Administrator manually. If publisher metadata or the mirror is inaccessible, the component is reported FAILED with the official download-page link; no unverified substitute is used. Individual download failures do not block later components. The WinGet source performs manifest hash validation; the script also records per-file SHA-256 and any Authenticode status. If WinGet source metadata is stale or a CDN file fails its expected hash, that component is FAILED, not silently accepted.
+Önerilen manuel sıra:
 
-Microsoft's compact `dxwebsetup.exe` DirectX web installer, TeamSpeak 3.6.2 and Logitech Onboard Memory Manager are downloaded from their respective official endpoints with publisher signature checks. The DirectX web installer needs internet during subsequent manual installation. TeamSpeak is additionally pinned to its expected SHA-256. Manual TeamSpeak installation must avoid optional Overwolf. FACEIT Anti-Cheat must be checked to ensure the unwanted separate FACEIT platform client was not installed.
+1. AMD chipset
+2. Intel I226-V LAN
+3. Realtek UCM — eşleşen ACPI device varsa
+4. AMD iGPU — ayrı bir iGPU-driver baseline'ı test edilecekse
+5. NVIDIA WHQL — graphics-only
+6. ZOWIE XL2566X+ WHQL monitor INF
+7. NVIDIA driver kurulumu ve reboot sonrasında \`Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd\`
 
-NVIDIA Control Panel HSA is Store-only. After manually installing and rebooting the NVIDIA driver, run `Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd` to install it through the official `msstore` WinGet source; the driver downloader copies that CMD into the download folder but does not run it. Wootility is browser-based and optional ExitLag remains a manual link in `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`.
+ASUS paketlerinin SHA-256'sı resmî kayıtla karşılaştırılıyor; AMD/NVIDIA EXE'lerinde publisher signature, monitör arşivinde sabit SHA-256 ve catalog doğrulanıyor. AMD Adrenalin EXE'si doğrudan driver-only INF değildir; iGPU için gerçek hardware ID/INF eşleşmesini kontrol ederim.
 
-Install applications manually and verify installed versions, optional components and behavior after each batch. The preparation script does **not** know whether manual installation later succeeded.
+Temiz Windows'ta I226-V internet bağlantısı henüz yoksa önceden hazırlanmış güvenilir LAN INF ile bağlantı kurulabilir.
 
-## Repeated tests
+### Uygulamalar
 
-Keep downloads/receipts for evidence. WinGet package subfolders are refreshed before each new download to prevent stale binaries being marked current. Do not run gaming/driver installers while benchmarking. Compare stable sessions with the same CS2 map/server/client settings; track frametime outliers, alt-tab/focus changes, Event Viewer driver resets and latency, not just average FPS.
+\`Download_PostFormat_Apps.cmd\` şu paketleri hazırlıyor: Chrome, AutoHotkey, Steam, FACEIT Anti-Cheat, Spotify, TeamSpeak 3.6.2, Logitech Onboard Memory Manager, DirectX web installer ve Visual C++ All-in-One.
 
-## Runtime boundary
+- **Visual C++:** TechPowerUp'tan güncel All-in-One ZIP; sayfadaki SHA-256 ile kontrol. Arşivi çıkarıp \`install_all.bat\` dosyasını manuel çalıştırırım.
+- **DirectX:** Microsoft \`dxwebsetup.exe\`; kurulum sırasında internet gerekiyor.
+- **TeamSpeak 3.6.2:** Sabit SHA-256 ile doğrulama; optional Overwolf bileşeni kurulumda seçilmiyor.
+- **Logitech OMM:** Publisher signature kontrolü.
+- **NVIDIA Control Panel:** NVIDIA driver kurulumundan ve reboot'tan sonra ayrı CMD ile Microsoft Store'dan kuruluyor.
+- **Wootility:** Browser üzerinden. **ExitLag:** İsteğe bağlı manuel indirme.
 
-Static checks can establish that wrappers call safe download paths and obvious mutating installer commands are absent. **They cannot validate** Windows PowerShell 5.1 execution, changing vendor support page schemas, WinGet download behavior, current signatures, inf compatibility, internet availability or Windows driver binding on the target system.
+WinGet paket klasörleri yeni indirme öncesi temizleniyor; eski dosya güncel sürüm gibi gösterilmiyor. Bir paketin başarısız olması sonraki paketleri engellemiyor.
+
+Sonuç: \`Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv\`. Bu dosya **indirme ve doğrulama durumunu** gösterir, kurulu uygulama listesini değil.
+
+### Karşılaştırma
+
+Driver kurulumu veya büyük download sırasında benchmark yapmam. Aynı CS2 map/server/client koşullarında frametime spike'larını, alt-tab/focus değişimlerini, Event Viewer driver reset kayıtlarını ve latency sonuçlarını karşılaştırırım.
+
+## English
+
+### Download workflow
+
+Driver packages come from official vendors; the Visual C++ All-in-One ZIP comes from TechPowerUp. Downloads are stored under \`Downloads/\` and reports under \`Logs/\`, relative to the active SSD Setup folder.
+
+Direct HTTPS transfers prefer \`curl.exe\` with retries, resume where supported, and verified-file reuse. WinGet temporarily selects \`wininet\`; the previous settings are restored on normal exit, with a backup for interruptions. \`-WinGetDownloader Default\` uses the existing backend for comparison.
+
+Packages are checked using SHA-256, Authenticode signatures, vendor hashes and catalogs as applicable. \`FAILED\` means not ready. **Download scripts do not install software**; the separate NVIDIA Control Panel CMD is an installation tool.
+
+### Drivers
+
+Run \`.drivers\Download_Gaming_Drivers.cmd\` for the B850-I / 9800X3D / RTX 3080 (PCI DEV_220A) configuration. Review \`Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv\`.
+
+Manual order: **AMD chipset → Intel I226-V → Realtek UCM (matching ACPI device) → optional, separately tested AMD iGPU driver → NVIDIA WHQL graphics-only → ZOWIE monitor INF → NVIDIA Control Panel after reboot**.
+
+ASUS downloads use vendor SHA-256 records; AMD/NVIDIA EXEs require valid publisher signatures; the monitor package uses a pinned SHA-256 and catalog check. AMD Adrenalin EXE is not a ready-to-install driver-only INF. If Windows lacks an Ethernet driver after installation, bootstrap I226-V with a previously verified LAN INF.
+
+### Applications
+
+Run \`Download_PostFormat_Apps.cmd\` for Chrome, AutoHotkey, Steam, FACEIT Anti-Cheat, Spotify, TeamSpeak 3.6.2, Logitech OMM, DirectX and Visual C++.
+
+- **Visual C++:** TechPowerUp All-in-One ZIP verified against its published SHA-256; extract and run \`install_all.bat\` manually.
+- **DirectX:** Microsoft \`dxwebsetup.exe\`; installation needs internet.
+- **TeamSpeak:** Pinned SHA-256; skip optional Overwolf.
+- **Logitech OMM:** Publisher signature check.
+- **NVIDIA Control Panel:** Separate CMD installs from Microsoft Store after the NVIDIA driver and reboot.
+- **Wootility:** Browser-based. **ExitLag:** Optional manual download.
+
+WinGet refreshes package folders so old files are not treated as current. A failed package does not prevent later downloads. Review \`Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv\` for **download and verification status**, not installation state.
+
+### Comparison
+
+Keep installation separate from benchmarks. Compare the same CS2 map/server/client conditions, including frametime spikes, focus changes, driver resets and latency.
