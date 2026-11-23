@@ -2,8 +2,8 @@
 
 Hardware-specific Windows 11 / CS2 setup for one PC, not a generic tuning guide.
 
-- [Hardware](SYSTEM.md) · [CS2/input/display reference](REFERENCE_STATE.md)
-- [Manual installation details](DOWNLOAD_ONLY.md) · [Validation status](VALIDATION.md)
+- [Hardware](docs/SYSTEM.md) · [CS2/input/display reference](docs/REFERENCE_STATE.md)
+- [Manual installation details](docs/DOWNLOAD_ONLY.md) · [Validation status](docs/VALIDATION.md)
 
 ## Canonical entrypoints
 
@@ -17,7 +17,7 @@ Hardware-specific Windows 11 / CS2 setup for one PC, not a generic tuning guide.
 Before manual installation, inspect the generated
 `Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv` and
 `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`.
-NVIDIA Control Panel is a separate Microsoft Store app. After manually installing the NVIDIA driver and rebooting, run `Downloads\\Drivers\\Install_NVIDIA_Control_Panel.cmd` (created by the driver downloader).
+NVIDIA Control Panel is a separate Microsoft Store app. After manually installing the NVIDIA graphics driver and rebooting, run `Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd` (staged by the driver downloader).
 AMD iGPU installation is optional and must be tested independently.
 
 ## Rules

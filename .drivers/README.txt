@@ -15,8 +15,8 @@ Suggested manual order:
 4. AMD iGPU OPTIONAL: only for a separately tested iGPU-driver configuration
 5. NVIDIA RTX 3080 WHQL Graphics Driver only
 6. ZOWIE XL2566X+ WHQL monitor INF
-7. After installing NVIDIA and rebooting, run Downloads\\Drivers\\Install_NVIDIA_Control_Panel.cmd to install NVIDIA Control Panel from Microsoft Store.
+7. After installing NVIDIA and rebooting, run Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd to install NVIDIA Control Panel from Microsoft Store.
 
 The AMD Adrenalin EXE is not a pre-extracted driver-only INF package.
 Review the exact hardware ID/INF before manual driver installation.
-See DOWNLOAD_ONLY.md and VALIDATION.md at the repository root.
+See docs\DOWNLOAD_ONLY.md and docs\VALIDATION.md at the repository root.
