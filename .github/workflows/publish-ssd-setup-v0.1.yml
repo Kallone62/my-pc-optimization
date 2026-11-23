@@ -40,7 +40,7 @@ jobs:
           cp .drivers/Download-Gaming-Drivers.ps1 "$ROOT/.drivers/"
           cp Download_PostFormat_Apps.cmd "$ROOT/"
           cp Run_CS2_Gaming_Scripts.cmd "$ROOT/"
-          cp DOWNLOAD_ONLY.md "$ROOT/"
+          cp -a docs "$ROOT/docs"
 
           cat > "$ROOT/INSTALL_README.txt" <<'INSTRUCTIONS'
           SSD Setup v0.1 - Windows 11 / CS2 kurulum ve bakim paketi
@@ -72,6 +72,7 @@ jobs:
 
           Bu paket Windows bolumu bicimlendiren 00_Fresh_Install_W11_Pro.cmd
           scriptini bilerek icermez. Sabit D: hedefi ve harici WIM gerektirir.
+          Detayli kilavuz: docs\DOWNLOAD_ONLY.md.
           Windows uzerinde gercek kurulum testi henuz tamamlanmamistir.
           INSTRUCTIONS
 
@@ -99,7 +100,7 @@ jobs:
               "Keyboard/wootility.io.txt",
               "Download_PostFormat_Apps.cmd",
               "Run_CS2_Gaming_Scripts.cmd",
-              "DOWNLOAD_ONLY.md",
+              "docs/DOWNLOAD_ONLY.md",
               "INSTALL_README.txt",
               ".bios/current/ROG-B850-I/README.md"
           ]
@@ -124,7 +125,8 @@ jobs:
                     "SSD Setup/After Game Update/shadercachereset.bat",
                     "SSD Setup/.bios/README.md",
                     "SSD Setup/.drivers/Download_Gaming_Drivers.cmd",
-                    "SSD Setup/Run_CS2_Gaming_Scripts.cmd"]
+                    "SSD Setup/Run_CS2_Gaming_Scripts.cmd",
+                    "SSD Setup/docs/DOWNLOAD_ONLY.md"]
               assert set(must).issubset(names)
               assert not any(n.endswith("00_Fresh_Install_W11_Pro.cmd") for n in names)
               assert not any("FINAL_AUDIT" in n or "Test_WU_Driver_Scan_Once" in n for n in names)

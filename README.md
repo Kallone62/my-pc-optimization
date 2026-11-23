@@ -2,8 +2,8 @@
 
 Hardware-specific Windows 11 / CS2 setup for one PC, not a generic tuning guide.
 
-- [Hardware](SYSTEM.md) · [CS2/input/display reference](REFERENCE_STATE.md)
-- [Manual installation details](DOWNLOAD_ONLY.md) · [Validation status](VALIDATION.md)
+- [Hardware](docs/SYSTEM.md) · [CS2/input/display reference](docs/REFERENCE_STATE.md)
+- [Manual installation details](docs/DOWNLOAD_ONLY.md) · [Validation status](docs/VALIDATION.md)
 
 ## Canonical entrypoints
 

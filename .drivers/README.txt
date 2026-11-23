@@ -19,4 +19,4 @@ Suggested manual order:
 
 The AMD Adrenalin EXE is not a pre-extracted driver-only INF package.
 Review the exact hardware ID/INF before manual driver installation.
-See DOWNLOAD_ONLY.md and VALIDATION.md at the repository root.
+See docs\DOWNLOAD_ONLY.md and docs\VALIDATION.md at the repository root.
