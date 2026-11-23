@@ -11,6 +11,7 @@ $ErrorActionPreference='Stop'
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
 # Windows PowerShell 5.1 web-request progress drawing can slow large transfers.
 $ProgressPreference='SilentlyContinue'
+. (Join-Path $PSScriptRoot 'Download-Transport.ps1')
 $PackRoot=Split-Path -Parent $PSScriptRoot
 $DownloadRoot=Join-Path $PackRoot 'Downloads\Apps'
 $LogRoot=Join-Path $PackRoot 'Logs\PostFormat'
@@ -43,24 +44,25 @@ function Invoke-PublisherDownload {
   $allow=@('download.microsoft.com','files.teamspeak-services.com','download01.logi.com')
   if($allow -notcontains $u.Host.ToLowerInvariant()){throw "Unapproved publisher host: $($u.Host)"}
   $dest=Join-Path $DownloadRoot $Filename
-  $clock=[Diagnostics.Stopwatch]::StartNew()
-  $curl=Get-Command curl.exe -ErrorAction SilentlyContinue
-  if($curl){
-   & $curl.Source --fail --location --silent --show-error --retry 2 --connect-timeout 30 --max-time 1800 --proto '=https' --proto-redir '=https' --output $dest $Url
-   if($LASTEXITCODE -ne 0){throw "Download failed (curl exit $LASTEXITCODE): $Url"}
-  }else{
-   Invoke-WebRequest -Uri $Url -OutFile $dest -UseBasicParsing -TimeoutSec 1800 -ErrorAction Stop
+  $receipt="$dest.source.json"
+  $reusable=$false
+  if((Test-Path -LiteralPath $dest -PathType Leaf) -and (Test-Path -LiteralPath $receipt -PathType Leaf)){
+   try{
+    $record=Get-Content -LiteralPath $receipt -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+    $reusable=($record.Url -ceq $Url -and $record.SHA256 -match '^[A-Fa-f0-9]{64}$' -and (Get-FileHashValue $dest) -eq $record.SHA256)
+   }catch{$reusable=$false}
   }
-  $clock.Stop()
-  $size=(Get-Item -LiteralPath $dest -ErrorAction Stop).Length
-  if($size -lt 102400){throw 'Downloaded file unexpectedly small.'}
-  $seconds=[math]::Max($clock.Elapsed.TotalSeconds,0.01)
-  Write-Host ("File transfer: {0:N1} MiB in {1:N1}s ({2:N1} MiB/s)" -f ($size/1MB),$seconds,(($size/1MB)/$seconds))
+  if(-not $reusable){ Save-HttpsPayload -Url $Url -Destination $dest }
+  else{ Write-Host "[CACHE OK] $Filename" }
+  if((Get-Item -LiteralPath $dest -ErrorAction Stop).Length -lt 102400){throw 'Downloaded file unexpectedly small.'}
   $hash=Get-FileHashValue $dest
   if($ExpectedSha -and $hash -ne $ExpectedSha.ToUpperInvariant()){throw "SHA256 mismatch: $hash"}
   $signature=Get-AuthenticodeSignature -LiteralPath $dest -ErrorAction Stop
   $subject=if($signature.SignerCertificate){[string]$signature.SignerCertificate.Subject}else{''}
   if($signature.Status -ne 'Valid' -or $subject -notmatch $PublisherRegex){throw "Invalid publisher signature: status=$($signature.Status); signer=$subject"}
+  if(-not $reusable){
+   @{Url=$Url;SHA256=$hash} | ConvertTo-Json -Compress | Set-Content -LiteralPath $receipt -Encoding UTF8
+  }
   Add-Entry $Name 'READY' $Url $dest $hash $Instructions
  }catch {Fail-Entry $Name $_.Exception.Message}
 }
@@ -123,18 +125,7 @@ function Invoke-TechPowerUpVisualCpp {
    else{Remove-Item -LiteralPath $dest -Force -ErrorAction Stop}
   }
   if(-not (Test-Path -LiteralPath $dest -PathType Leaf)){
-   $clock=[Diagnostics.Stopwatch]::StartNew()
-   $curl=Get-Command curl.exe -ErrorAction SilentlyContinue
-   if($curl){
-    & $curl.Source --fail --location --silent --show-error --retry 2 --connect-timeout 30 --max-time 1800 --proto '=https' --proto-redir '=https' --output $dest $url
-    if($LASTEXITCODE -ne 0){throw "TechPowerUp download failed (curl exit $LASTEXITCODE); use official page manually: $page"}
-   }else{
-    Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -TimeoutSec 1800 -ErrorAction Stop
-   }
-   $clock.Stop()
-   $size=(Get-Item -LiteralPath $dest -ErrorAction Stop).Length
-   $seconds=[math]::Max($clock.Elapsed.TotalSeconds,0.01)
-   Write-Host ("TechPowerUp transfer: {0:N1} MiB in {1:N1}s ({2:N1} MiB/s)" -f ($size/1MB),$seconds,(($size/1MB)/$seconds))
+   Save-HttpsPayload -Url $url -Destination $dest
   }
   if((Get-Item -LiteralPath $dest -ErrorAction Stop).Length -lt 10MB){throw "TechPowerUp ZIP unexpectedly small."}
   $hash=Get-FileHashValue $dest

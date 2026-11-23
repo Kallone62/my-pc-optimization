@@ -10,6 +10,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $ProgressPreference = 'SilentlyContinue'
+. (Join-Path (Split-Path -Parent $PSScriptRoot) '.scripts\Download-Transport.ps1')
 $script:WebSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 $ScriptVersion = '3.0-download-only'
 $ScriptRoot = $PSScriptRoot
@@ -219,36 +220,8 @@ function Download-OfficialFile {
     }
     if ($Referer) { $headers['Referer'] = $Referer }
 
-    # BITS background transfers can be throttled by Windows and are a poor
-    # default for interactive full-speed setup downloads.
-    # Use Windows' built-in curl for file payloads; preserve the existing
-    # source allowlist, SHA-256, Authenticode and signed-cache checks.
-    $clock = [Diagnostics.Stopwatch]::StartNew()
-    $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
-    if ($curl) {
-        $args = @('--fail','--location','--silent','--show-error','--retry','2',
-                  '--connect-timeout','30','--max-time','1800',
-                  '--proto','=https','--proto-redir','=https',
-                  '--user-agent',$headers['User-Agent'],'--output',$Destination)
-        if ($Referer) { $args += @('--referer',$Referer) }
-        $args += $Url
-        & $curl.Source @args
-        if ($LASTEXITCODE -ne 0) {
-            throw "Download failed (curl exit $LASTEXITCODE): $Url"
-        }
-    }
-    else {
-        Invoke-WebRequest `
-            -Uri $Url `
-            -OutFile $Destination `
-            -Headers $headers `
-            -WebSession $script:WebSession `
-            -UseBasicParsing `
-            -TimeoutSec 1800 `
-            -ErrorAction Stop
-    }
+    Save-HttpsPayload -Url $Url -Destination $Destination -Referer $Referer -UserAgent $headers['User-Agent']
 
-    $clock.Stop()
     if (-not (Test-Path -LiteralPath $Destination)) {
         throw "Download did not create: $Destination"
     }
@@ -259,8 +232,6 @@ function Download-OfficialFile {
     }
 
     $actualSha = Get-FileSha256 -Path $Destination
-    $seconds = [math]::Max($clock.Elapsed.TotalSeconds,0.01)
-    Write-Host ("File transfer: {0:N1} MiB in {1:N1}s ({2:N1} MiB/s)" -f ($size/1MB),$seconds,(($size/1MB)/$seconds))
     Write-Host ("SHA-256    : {0}" -f $actualSha)
 
     if ($ExpectedSha256 -and $actualSha -ne $ExpectedSha256.ToUpperInvariant()) {
