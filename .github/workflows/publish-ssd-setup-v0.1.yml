@@ -44,40 +44,49 @@ jobs:
           cp -a docs "$ROOT/docs"
 
           cat > "$ROOT/INSTALL_README.txt" <<'INSTRUCTIONS'
-          SSD Setup v0.1 - Windows 11 / CS2 kurulum ve bakim paketi
-          Hedef: Ryzen 7 9800X3D / ASUS ROG STRIX B850-I / RTX 3080 12GB
-
-          1. ZIP dosyasini oldugu gibi cikarin. Gizli .bios, .drivers
-             ve .scripts klasorlerini silmeyin.
-          2. .drivers\Download_Gaming_Drivers.cmd dosyasini calistirin.
-             Suruculeri SADECE indirir ve dogrular, kurmaz.
-          3. Download_PostFormat_Apps.cmd dosyasini calistirin.
-             Uygulamalari SADECE indirir ve dogrular, kurmaz.
-          4. NVIDIA surucusunu manuel kurup yeniden baslattiktan sonra
+          SSD Setup v0.1 — CS2 espor sistemi / CS2 esports system
+          Guncel platform / Current platform: Ryzen 7 9800X3D, ASUS ROG STRIX B850-I, RTX 3080 12 GB
+          
+          TURKCE
+          
+          1. ZIP'i klasor yapisini koruyarak cikarin (.bios, .drivers, .scripts dahil).
+          2. Surucu paketleri: .drivers\Download_Gaming_Drivers.cmd
+          3. Uygulama paketleri: Download_PostFormat_Apps.cmd
+             Iki script de indirir ve dogrular; kurulum yapmaz.
+          4. Sonuclari Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv ve
+             Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv uzerinden kontrol edip
+             uygun paketleri manuel kurun.
+          5. NVIDIA driver kurulumu + reboot sonrasinda
              Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd dosyasini calistirin.
-             Bu CMD Microsoft Store uzerinden denetim masasini kurar/dogrular.
-          5. Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv ve
-             Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv dosyalarini
-             inceleyip dogrulanmis paketleri manuel kurun.
-          6. Suruculer dogrulandiktan sonra, sistem ayarlarini uygulamak
-             istiyorsaniz Run_CS2_Gaming_Scripts.cmd dosyasini calistirin.
-             Bu adim Windows/CS2 ayarlarini gercekten degistirir.
-          7. Game\autoexec.cfg CS2 yapilandirma dosyasidir; kendi CS2
-             cfg dizininize uygun sekilde elle yerlestirin.
-          8. Training\KOVAAKS_CS2_STANDARD_V1.zip icinde otomatik
-             Apply-KOVAAKS-CS2-STANDARD.bat ve geri yukleme scriptleri var.
-          9. After Game Update\shadercachereset.bat istege bagli bir
-             shader cache temizleyicidir. Her guncelleme sonrasi zorunlu
-             degildir. Temizleme sonrasi shader derleme takilmalari olabilir.
-          10. .bios/current/ROG-B850-I su an yalnizca bekleyen BIOS
-             kayit talimatlarini icerir; dogrulanmis profil yoktur.
-             .bios/legacy/Z690-Tachyon ayarlari eski donanim icindir,
-             B850-I sistemine UYGULAMAYIN.
-
-          Bu paket Windows bolumu bicimlendiren 00_Fresh_Install_W11_Pro.cmd
-          scriptini bilerek icermez. Sabit D: hedefi ve harici WIM gerektirir.
-          Detayli kilavuz: docs\DOWNLOAD_ONLY.md.
-          Windows uzerinde gercek kurulum testi henuz tamamlanmamistir.
+             Bu arac NVIDIA Control Panel'i Microsoft Store'dan kurar.
+          6. Run_CS2_Gaming_Scripts.cmd Windows, device, network ve security
+             baseline'ini uygular; ayarlari gercekten degistirir.
+          7. Game\autoexec.cfg CS2 konfigurasyonumdur.
+          8. Training\KOVAAKS_CS2_STANDARD_V1.zip Apply/Restore scriptlerini icerir.
+          9. After Game Update\shadercachereset.bat optional shader cache cleanup.
+          10. .bios/current/ROG-B850-I aktif platform kaydi icin ayrildi;
+              .bios/legacy/Z690-Tachyon eski sistemin BIOS arsividir.
+          
+          ENGLISH
+          
+          1. Extract the ZIP while preserving hidden folders and paths.
+          2. Run .drivers\Download_Gaming_Drivers.cmd for driver packages.
+          3. Run Download_PostFormat_Apps.cmd for application packages.
+             Both download and verify packages; neither installs them.
+          4. Review the two CSV manifests under Downloads\Drivers and Downloads\Apps
+             and install the verified matching packages manually.
+          5. After installing the NVIDIA driver and rebooting, run
+             Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd for the Store app.
+          6. Run_CS2_Gaming_Scripts.cmd applies actual Windows/device/network/security
+             configuration changes. Game\autoexec.cfg holds my CS2 settings.
+          7. Training contains KovaaK apply/restore tools; After Game Update
+             contains optional shader cache cleanup.
+          8. BIOS archives are separated into current B850-I and legacy Z690.
+          
+          Windows imaging tool 00_Fresh_Install_W11_Pro.cmd formats D:;
+          it is deliberately excluded from this release ZIP.
+          Kurulum ayrintilari / Details: docs\DOWNLOAD_ONLY.md
+          
           INSTRUCTIONS
 
           python3 - <<'PY'
@@ -152,15 +161,24 @@ jobs:
             exit 0
           fi
           cat > /tmp/ssd-setup-release-notes.md <<'NOTES'
-          SSD Setup v0.1: Windows 11 / CS2 icin secilmis kurulum ve bakim paketi.
-
-          Icerik: gerekli surucu/uygulama indirme-dogrulama scriptleri, Windows/CS2 baseline scriptleri, BIOS klasoru, Game/Keyboard dosyalari, KovaaK otomatik uygulama/geri yukleme paketi ve After Game Update shader cache temizleyicisi.
-
-          Surucu ve uygulama baslaticilari otomatik kurulum yapmaz: sadece indirir/dogrular, manuel kurulum gerekir. Windows/CS2 scriptleri ise sistem ayarlarini degistirir. BIOS klasorundeki Z690 kayitlari eski donanima aittir; mevcut B850-I BIOS profili henuz dogrulanmamistir.
-
-          Tehlikeli sabit D: bicimlendirmesi iceren 00_Fresh_Install_W11_Pro.cmd, test dosyalari, gelistirme raporlari ve eski alias baslaticilar release ZIP'ine alinmamistir.
-
-          Kullanim ayrintilari ZIP icindeki INSTALL_README.txt dosyasinda. Dosya butunlugu CI uzerinde dogrulanmistir; Windows uzerinde canli kurulum testi bu release ile yapilmamistir.
+          SSD Setup v0.1 — CS2 Espor Sistemi / Esports System
+          
+          TURKCE
+          Guncel donanim icin driver/app paket hazirligi, Windows ve CS2 baseline
+          scriptleri, peripheral kayitlari, KovaaK apply/restore ve BIOS arsivi.
+          Indirme scriptleri kurulum yapmaz; Windows/CS2 scriptleri sistem
+          ayarlarini degistirir. Eski Z690 BIOS kayitlari arsivde tutulur.
+          Kurulum: ZIP icindeki INSTALL_README.txt
+          
+          ENGLISH
+          Driver/app package preparation, Windows and CS2 baseline scripts,
+          peripheral records, KovaaK apply/restore tools and archived BIOS profiles.
+          Downloads are separate from installation; Windows/CS2 scripts apply
+          system configuration. Previous Z690 BIOS records remain archived.
+          Setup instructions: INSTALL_README.txt inside the ZIP.
+          
+          The D:-formatting Windows imaging tool is excluded from the release.
+          
           NOTES
           gh release create v0.1 dist/SSD_Setup_v0.1.zip \
             --target "$GITHUB_SHA" \

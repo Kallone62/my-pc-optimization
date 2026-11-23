@@ -23,11 +23,11 @@ Bu çalışma tek bir donanımda bitmiyor. Sistemimi yükselttiğimde aktif yap�
 - **Windows ve CS2:** `Run_CS2_Gaming_Scripts.cmd` — sistem ayarlarını gerçekten değiştirir. Etkileri incelenmeden çalıştırılmamalıdır.
 - **Oyun yapılandırması:** `Game/autoexec.cfg` — CS2 ayarlarım.
 
-İndirilen paketlerin sonuçları `Downloads/` altındaki raporlarda tutulur. Kurulumlar manuel tamamlanır. Bu dosyalar mevcut sistemim için hazırlandığından başka bir bilgisayara doğrudan uygulanmamalıdır.
+İndirme ve doğrulama sonuçları `Downloads/` altındaki raporlarda kayıtlı. Driver ve uygulama kurulumlarını bu sonuçlara göre manuel tamamlıyorum.
 
-**Önemli:** `00_Fresh_Install_W11_Pro.cmd` sabit **D:** sürücüsünü biçimlendirebilir. Normal optimizasyon amacıyla çalıştırılmamalıdır. Bazı Windows scriptleri güvenlik ve güncelleme politikalarını değiştirir. Depodaki ayarların tamamı gerçek maç performansı açısından doğrulanmış kabul edilmemelidir.
+**Not:** `00_Fresh_Install_W11_Pro.cmd`, **D:** sürücüsünü formatlayan ayrı bir Windows image kurulum aracıdır; optimizasyon launcher'ı değildir.
 
-**Belgeler:** [Sistem](docs/SYSTEM.md) · [Referans ayarlar](docs/REFERENCE_STATE.md) · [İndirme ve kurulum](docs/DOWNLOAD_ONLY.md) · [Doğrulama durumu](docs/VALIDATION.md)
+**Belgeler:** [Amaç ve yaklaşım](docs/OPTIMIZATION_GOALS.md) · [Sistem](docs/SYSTEM.md) · [Referans ayarlar](docs/REFERENCE_STATE.md) · [İndirme ve kurulum](docs/DOWNLOAD_ONLY.md) · [Doğrulama durumu](docs/VALIDATION.md)
 
 ---
 
@@ -50,8 +50,8 @@ This is an ongoing project, not a configuration tied permanently to one hardware
 - **Windows and CS2:** `Run_CS2_Gaming_Scripts.cmd` — makes actual system changes. Review its effects before running it.
 - **Game configuration:** `Game/autoexec.cfg` — my CS2 settings.
 
-Download results are recorded under `Downloads/`; installation is manual. These files are designed for my current hardware and should not be applied blindly to other PCs.
+Download and verification results are recorded under `Downloads/`. I use these reports to complete driver and application installation manually.
 
-**Important:** `00_Fresh_Install_W11_Pro.cmd` may format the fixed **D:** drive. Do not run it for routine optimization. Some Windows scripts alter security and update policies. Not every configuration in this repository has been validated for real-match performance.
+**Note:** `00_Fresh_Install_W11_Pro.cmd` is a separate Windows image deployment tool that formats the fixed **D:** drive; it is not an optimization launcher.
 
-**Documentation:** [System](docs/SYSTEM.md) · [Reference settings](docs/REFERENCE_STATE.md) · [Downloads and installation](docs/DOWNLOAD_ONLY.md) · [Validation status](docs/VALIDATION.md)
+**Documentation:** [Goals and approach](docs/OPTIMIZATION_GOALS.md) · [System](docs/SYSTEM.md) · [Reference settings](docs/REFERENCE_STATE.md) · [Downloads and installation](docs/DOWNLOAD_ONLY.md) · [Validation status](docs/VALIDATION.md)
