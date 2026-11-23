@@ -141,8 +141,8 @@ jobs:
         run: |
           set -euo pipefail
           if gh release view v0.1 >/dev/null 2>&1; then
-            echo "Release v0.1 already exists; refusing to overwrite it."
-            exit 1
+            echo "Release v0.1 already exists; leaving immutable release unchanged."
+            exit 0
           fi
           cat > /tmp/ssd-setup-release-notes.md <<'NOTES'
           SSD Setup v0.1: Windows 11 / CS2 icin secilmis kurulum ve bakim paketi.
