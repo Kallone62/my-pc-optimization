@@ -8,47 +8,47 @@
 
 ### Asıl hedefim
 
-Bu projede bilgisayarımı yalnızca yüksek FPS üreten bir makineye dönüştürmeye çalışmıyorum. **Amacım, CS2'de verdiğim kararların ve fiziksel girdilerimin oyuna mümkün olduğunca hızlı, doğru ve tutarlı yansıdığı bir sistem oluşturmak.** Bunun gerçek karşılığı, kritik anlarda atış, spray, counter-strafe ve küçük nişan düzeltmelerini sistemin değişken davranışına takılmadan uygulayabilmek.
+Bu projede bilgisayarımı yalnızca yüksek FPS üreten bir makineye dönüştürmeye çalışmıyorum. **Amacım, CS2'de verdiğim kararların ve mouse ve klavye inputlarımın oyuna mümkün olduğunca hızlı, doğru ve tutarlı yansıdığı bir sistem oluşturmak.** Bunun gerçek karşılığı, kritik anlarda one-tap, spray, counter-strafe ve micro-correction hareketlerini sistemin değişken davranışına takılmadan uygulayabilmek.
 
-Bunun için giriş cihazından işletim sistemine, oyunun işlem yükünden ekranın görüntüyü sunmasına kadar yerel zinciri; ağ üzerinden sunucuya iletilen eylemleri ise ayrı ama ilişkili bir zincir olarak inceliyorum. BIOS, CPU, bellek, GPU, sürücüler, USB, fare, klavye, monitör ve ağ ayarları tek başına değil, **birbirleriyle nasıl çalıştıklarına göre** değerlendirilmeli.
+Bunun için input cihazı → Windows → game engine → render → display zincirini; ağ üzerinden sunucuya iletilen eylemleri ise ayrı ama ilişkili bir zincir olarak inceliyorum. BIOS, CPU, bellek, GPU, sürücüler, USB, fare, klavye, monitör ve ağ ayarları tek başına değil, **birbirleriyle nasıl çalıştıklarına göre** değerlendirilmeli.
 
 ### Neden yalnızca FPS yeterli değil?
 
-Ortalama FPS sistemin ne kadar hızlı kare üretebildiğini gösterir; fakat **bir girdinin ne zaman işlendiğini, sonraki görüntünün ne zaman sunulduğunu veya zamanlamanın ne kadar değişken olduğunu tek başına açıklamaz**. Aynı ortalamaya sahip iki yapılandırmadan biri arada gecikme sıçramaları üretebilir. Rekabetçi oyunda önemli olan yalnızca tipik kare değil, kritik anda gelen kötü kare ve geciken girdidir.
+Ortalama FPS sistemin ne kadar hızlı kare üretebildiğini gösterir; fakat **bir inputun ne zaman işlendiğini, yeni frame'in ne zaman ekrana geldiğini veya zamanlamanın ne kadar değişken olduğunu tek başına açıklamaz**. Aynı ortalamaya sahip iki yapılandırmadan biri arada frametime veya latency spike'ları üretebilir. Rekabetçi oyunda önemli olan yalnızca tipik kare değil, kritik anda oluşan frametime spike'ı ve geciken inputtur.
 
-Örneğin bir ayar ortalama FPS'yi 500'den 560'a yükseltirken nadir frametime sıçramalarını büyütüyorsa, sayısal artışa rağmen spray veya counter-strafe zamanlaması daha düzensiz hâle gelebilir. Bu sayılar temsili; **daha yüksek ortalama FPS, otomatik olarak daha iyi bir çalışma noktası demek değil.** Düşük gecikme, düşük frametime varyansı, kötü uç değerler (tail latency) ve kararlılık birlikte değerlendirilmeli.
+Örneğin bir ayar ortalama FPS'yi 500'den 560'a yükseltirken nadir frametime sıçramalarını büyütüyorsa, sayısal artışa rağmen spray veya counter-strafe zamanlaması daha düzensiz hâle gelebilir. Bu sayılar temsili; **daha yüksek ortalama FPS, otomatik olarak daha iyi bir sonuç demek değil.** Input latency, frametime varyansı, tail latency ve stabilite birlikte değerlendirilmeli.
 
 ### “Mermi gitmiyor” derken neyi kastediyorum?
 
-Dar anlamda, nişangâh rakibin üzerindeyken isabet etmiş gibi görünen bir atışın sunucuda hasar olarak onaylanmaması. Daha geniş anlamda ise nişan, ateş etme, durma, yön değiştirme ve spray girdilerimin **niyet ettiğim zamanlama veya konumdan sapmış gibi hissettirmesi**.
+Dar anlamda, nişangâh rakibin üzerindeyken isabet etmiş gibi görünen bir atışın server tarafında hit registration / damage olarak onaylanmaması. Daha geniş anlamda ise nişan, ateş etme, durma, yön değiştirme ve spray inputlarımın **niyet ettiğim zamanlama veya konumdan sapmış gibi hissettirmesi**.
 
-Bu his tek başına ağ ya da donanım hatasının kanıtı değil. Gerçek nişan hatası, hareket hâlinde ateş etme, silahın isabet dağılımı, yerel görüntüleme gecikmesi, değişken frametime, paket kaybı veya istemci–sunucu zamanlama farkları birbirine benzeyen sonuçlar üretebilir. **Ekranda görünen bir kare, sunucunun aynı anda aynı durumu gördüğünü kanıtlamaz.** Önce hangi halkayı ölçtüğümü ayırmam gerekiyor.
+Bu his tek başına ağ ya da donanım hatasının kanıtı değil. Gerçek nişan hatası, hareket hâlinde ateş etme, weapon spread, display latency, frametime spike'ları, packet loss veya client–server timing farkları birbirine benzeyen sonuçlar üretebilir. **Ekranda gördüğüm frame, server'ın aynı anda aynı durumu gördüğünü kanıtlamaz.** Önce hangi halkayı ölçtüğümü ayırmam gerekiyor.
 
 ### Somut örnekler
 
-**1. One-tap ve micro-correction:** Rakibi gördüğüm anda fare hareketini tamamlayıp ateş ediyorum. Eğer girişin işlenmesi ve yeni görüntünün sunulması değişken gecikiyorsa, küçük düzeltmenin geri bildirimi de değişken gelir. Burada yalnızca FPS'yi değil, tekrarlanan aynı senaryoda frametime dağılımını ve mümkünse uçtan uca giriş–görüntü gecikmesini karşılaştırırım. Daha hızlı ama daha düzensiz bir sonuç yeterli değil.
+**1. One-tap ve micro-correction:** Rakibi gördüğüm anda fare hareketini tamamlayıp ateş ediyorum. Input processing veya ekrandaki visual feedback değişken gecikiyorsa micro-correction'ın geri bildirimi de değişken gelir. Burada yalnızca FPS'yi değil, tekrarlanan aynı senaryoda frametime dağılımını ve mümkünse end-to-end input-to-photon latency'yi karşılaştırırım. Daha hızlı ama daha düzensiz bir sonuç yeterli değil.
 
-**2. Counter-strafe ve spray:** Bir yönde hareket ederken ters yöne basıp durduğum ve ateş ettiğim anın tutarlı olması gerekiyor. Klavyenin tetikleme/rapid-trigger ayarını daha agresif yapmak otomatik olarak daha iyi değil; yanlışlıkla tetikleme veya zamanlama varyansı artabilir. Aynı hareket–ateş rutiniyle önceki ve yeni ayarı karşılaştırır, isabet veya hissi birkaç pozisyona dayanarak kesinleştirmem.
+**2. Counter-strafe ve spray:** Bir yönde hareket ederken ters yöne basıp durduğum ve ateş ettiğim anın tutarlı olması gerekiyor. Klavyenin actuation / Rapid Trigger ayarını daha agresif yapmak otomatik olarak daha iyi değil; istenmeyen inputlar veya timing varyansı artabilir. Aynı hareket–ateş rutiniyle önceki ve yeni ayarı karşılaştırır, isabet veya hissi birkaç pozisyona dayanarak kesinleştirmem.
 
-**3. Polling rate ve USB yükü:** Farenin raporlama hızını 2000 Hz'den 8000 Hz'e yükseltmek teoride rapor aralığını kısaltabilir. Ama işlemci, USB ve oyun yükü altında daha fazla dalgalanma yaratıyorsa gerçek avantaj kaybolabilir. Karar, “8000 daha büyük” mantığıyla değil; aynı koşullarda giriş gecikmesi, frametime uçları ve kararlılıkla verilir.
+**3. Polling rate ve USB yükü:** Farenin polling rate'ini 2000 Hz'den 8000 Hz'e yükseltmek teoride input report interval'ını kısaltabilir. Ama işlemci, USB ve oyun yükü altında daha fazla dalgalanma yaratıyorsa gerçek avantaj kaybolabilir. Karar, “8000 daha büyük” mantığıyla değil; aynı koşullarda input latency, frametime tail değerleri ve stabiliteyle verilir.
 
-**4. BIOS, bellek ve CPU ayarları:** Daha agresif bellek zamanlaması veya CPU politikası sentetik testte kazanç gösterebilir. Buna karşılık oyun sırasında mikro takılma, kararsız frekans davranışı veya açılışlar arasında tutarsızlık ortaya çıkıyorsa bu ayarı tutmam. Ölçüm, kararlılık ve yeniden başlatma sonrası tekrarlanabilirlik birlikte geçerli olmalı.
+**4. BIOS, bellek ve CPU ayarları:** Daha agresif bellek zamanlaması veya CPU politikası benchmark'ta kazanç gösterebilir. Buna karşılık oyun sırasında microstutter, kararsız clock davranışı veya açılışlar arasında tutarsızlık ortaya çıkıyorsa bu ayarı tutmam. Ölçüm, kararlılık ve yeniden başlatma sonrası tekrarlanabilirlik birlikte geçerli olmalı.
 
-**5. Ağ ve FACEIT:** Daha düşük ping her zaman daha iyi atış onayı anlamına gelmez. Paket kaybı, jitter ve sunucu tarafı koşullar farklı bir tablo oluşturabilir. Yerel bir aim veya frametime testindeki kazanımı online oyunda aynen var saymam; yerel sonuçları FACEIT/gerçek maç gözlemlerinden ayırırım. Yerel olarak hızlanmak, sunucuya ait belirsizlikleri ortadan kaldırmaz.
+**5. Ağ ve FACEIT:** Daha düşük ping her zaman daha iyi hit registration anlamına gelmez. Packet loss, jitter ve server-side koşullar farklı bir tablo oluşturabilir. Yerel bir aim veya frametime testindeki kazanımı online oyunda aynen var saymam; yerel sonuçları FACEIT/gerçek maç gözlemlerinden ayırırım. Yerel olarak hızlanmak, sunucuya ait belirsizlikleri ortadan kaldırmaz.
 
 ### Bir ayarı nasıl değerlendiriyorum?
 
-Önce **mevcut yapılandırmayı referans** olarak kaydederim. Ardından değişiklik için şu soruları yanıtlarım: Hangi sorunu hedefliyorum? Nasıl fayda sağlaması bekleniyor? Aynı koşullarda neyle karşılaştıracağım? **Hangi sonucu görürsem değişikliği tutacağım?** Bu kabul koşulunu sonucu görmeden belirlerim.
+Önce **mevcut baseline'ı** kaydederim. Ardından değişiklik için şu soruları yanıtlarım: Hangi sorunu hedefliyorum? Nasıl fayda sağlaması bekleniyor? Aynı koşullarda neyle karşılaştıracağım? **Hangi sonucu görürsem değişikliği tutacağım?** Bu kabul koşulunu sonucu görmeden belirlerim.
 
-Mümkün olduğunda tek değişkeni değiştirir, karşılaştırılabilir koşullarda tekrar ederim. Fark küçük veya öznel ise kör A/B ve eski ayara dönüş kullanırım. Yerel testler hızlı ön eleme sağlar; gerekli durumlarda sonucu birden fazla oturumda, yeniden başlatma sonrasında ve gerçek maçta da kontrol ederim. Tek iyi benchmark, birkaç kill veya bir akşamlık iyi his başarı kanıtı değil.
+Mümkün olduğunda tek değişkeni değiştirir, karşılaştırılabilir koşullarda tekrar ederim. Fark küçük veya öznel ise blind A/B ve eski ayara rollback kullanırım. Yerel testler hızlı ön eleme sağlar; gerekli durumlarda sonucu birden fazla oturumda, yeniden başlatma sonrasında ve gerçek maçta da kontrol ederim. Tek iyi benchmark, birkaç kill veya bir akşamlık iyi his başarı kanıtı değil.
 
-Bir katmandaki kazanç başka bir katmandaki tutarlılığı bozuyorsa bütün zincirin sonucu önemlidir. **Net ve tekrarlanabilir fayda yoksa ayar referans yapılandırmaya girmez.** Doğrulanan değişiklikleri gerekçesi, koşulları ve geri dönüş bilgisiyle saklarım.
+Bir katmandaki kazanç başka bir katmandaki tutarlılığı bozuyorsa bütün zincirin sonucu önemlidir. **Net ve tekrarlanabilir fayda yoksa ayar aktif baseline'a girmez.** Doğrulanan değişiklikleri gerekçesi, test koşulları ve rollback bilgisiyle saklarım.
 
 ### Bu deponun amacı ve sürekliliği
 
-Bu depo, herkese uygulanacak evrensel bir tweak listesi değil; kendi sistemim için **ölçülerek geliştirilen, gerektiğinde geri alınabilen ve yeniden kurulabilen** bir çalışma yapılandırmasının kaydı. Şu an aktif platformum Ryzen 7 9800X3D / ASUS B850-I. Önceki i9-13900KF / Z690 Tachyon kayıtları arşivde duruyor. Gelecekte donanım yükselttiğimde eski sonuçları kendi koşullarıyla koruyup yeni sistemi yeniden değerlendireceğim.
+Bu depo, herkese uygulanacak evrensel bir tweak listesi değil; kendi sistemim için **ölçülerek geliştirilen, gerektiğinde geri alınabilen ve yeniden kurulabilen** bir optimizasyon baseline'ının kaydı. Şu an aktif platformum Ryzen 7 9800X3D / ASUS B850-I. Önceki i9-13900KF / Z690 Tachyon kayıtları arşivde duruyor. Gelecekte donanım yükselttiğimde eski sonuçları kendi koşullarıyla koruyup yeni sistemi yeniden değerlendireceğim.
 
-**Başarı ölçütüm:** Daha yüksek bir benchmark skoru değil; başlangıç yapılandırmasına kıyasla daha hızlı, daha tutarlı ve kararlı olduğu gösterilen, gerçek CS2 oynanışına katkısı sınanmış bir sistem.
+**Başarı ölçütüm:** Daha yüksek bir benchmark skoru değil; başlangıç baseline'ına kıyasla daha hızlı, daha tutarlı ve kararlı olduğu gösterilen, gerçek CS2 oynanışına katkısı sınanmış bir sistem.
 
 İlgili kayıtlar: [Güncel sistem](SYSTEM.md) · [Referans ayarlar](REFERENCE_STATE.md) · [Doğrulama durumu](VALIDATION.md).
 
