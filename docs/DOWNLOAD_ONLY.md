@@ -6,7 +6,7 @@ The purpose of this layer is to **download and verify packages while keeping ins
 
 ## Türkçe
 
-### Download workflow
+### İndirme akışı
 
 - Driver paketleri resmî vendor kaynaklarından, Visual C++ All-in-One arşivi TechPowerUp'tan indiriliyor.
 - Paketler `Downloads/`, log ve receipt'ler `Logs/` altında; sürücü harfine bağlı değiller.

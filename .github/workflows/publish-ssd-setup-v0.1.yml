@@ -45,27 +45,27 @@ jobs:
 
           cat > "$ROOT/INSTALL_README.txt" <<'INSTRUCTIONS'
           SSD Setup v0.1 — CS2 espor sistemi / CS2 esports system
-          Guncel platform / Current platform: Ryzen 7 9800X3D, ASUS ROG STRIX B850-I, RTX 3080 12 GB
+          Güncel platform / Current platform: Ryzen 7 9800X3D, ASUS ROG STRIX B850-I, RTX 3080 12 GB
           
-          TURKCE
+          TÜRKÇE
           
-          1. ZIP'i klasor yapisini koruyarak cikarin (.bios, .drivers, .scripts dahil).
-          2. Surucu paketleri: .drivers\Download_Gaming_Drivers.cmd
+          1. ZIP'i klasör yapısını koruyarak çıkarın (.bios, .drivers, .scripts dahil).
+          2. Sürücü paketleri: .drivers\Download_Gaming_Drivers.cmd
           3. Uygulama paketleri: Download_PostFormat_Apps.cmd
-             Iki script de indirir ve dogrular; kurulum yapmaz.
-          4. Sonuclari Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv ve
-             Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv uzerinden kontrol edip
+             İki script de indirir ve doğrular; kurulum yapmaz.
+          4. Sonuçları Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv ve
+             Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv üzerinden kontrol edip
              uygun paketleri manuel kurun.
-          5. NVIDIA driver kurulumu + reboot sonrasinda
-             Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd dosyasini calistirin.
-             Bu arac NVIDIA Control Panel'i Microsoft Store'dan kurar.
+          5. NVIDIA driver kurulumu + reboot sonrasında
+             Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd dosyasını çalıştırın.
+             Bu araç NVIDIA Control Panel'i Microsoft Store'dan kurar.
           6. Run_CS2_Gaming_Scripts.cmd Windows, device, network ve security
-             baseline'ini uygular; ayarlari gercekten degistirir.
-          7. Game\autoexec.cfg CS2 konfigurasyonumdur.
-          8. Training\KOVAAKS_CS2_STANDARD_V1.zip Apply/Restore scriptlerini icerir.
-          9. After Game Update\shadercachereset.bat optional shader cache cleanup.
-          10. .bios/current/ROG-B850-I aktif platform kaydi icin ayrildi;
-              .bios/legacy/Z690-Tachyon eski sistemin BIOS arsividir.
+             baseline'ını uygular; ayarları gerçekten değiştirir.
+          7. Game\autoexec.cfg CS2 konfigürasyonumdur.
+          8. Training\KOVAAKS_CS2_STANDARD_V1.zip Apply/Restore scriptlerini içerir.
+          9. After Game Update\shadercachereset.bat isteğe bağlı shader cache cleanup aracıdır.
+          10. .bios/current/ROG-B850-I aktif platform kaydı için ayrıldı;
+              .bios/legacy/Z690-Tachyon eski sistemin BIOS arşividir.
           
           ENGLISH
           
@@ -85,7 +85,7 @@ jobs:
           
           Windows imaging tool 00_Fresh_Install_W11_Pro.cmd formats D:;
           it is deliberately excluded from this release ZIP.
-          Kurulum ayrintilari / Details: docs\DOWNLOAD_ONLY.md
+          Kurulum ayrıntıları / Details: docs\DOWNLOAD_ONLY.md
           
           INSTRUCTIONS
 
@@ -164,10 +164,10 @@ jobs:
           SSD Setup v0.1 — CS2 Espor Sistemi / Esports System
           
           TURKCE
-          Guncel donanim icin driver/app paket hazirligi, Windows ve CS2 baseline
-          scriptleri, peripheral kayitlari, KovaaK apply/restore ve BIOS arsivi.
-          Indirme scriptleri kurulum yapmaz; Windows/CS2 scriptleri sistem
-          ayarlarini degistirir. Eski Z690 BIOS kayitlari arsivde tutulur.
+          Güncel donanım icin driver/app paket hazırlığı, Windows ve CS2 baseline
+          scriptleri, peripheral kayitlari, KovaaK apply/restore ve BIOS arşivi.
+          İndirme scriptleri kurulum yapmaz; Windows/CS2 scriptleri sistem
+          ayarlarını değiştirir. Eski Z690 BIOS kayıtları arşivde tutulur.
           Kurulum: ZIP icindeki INSTALL_README.txt
           
           ENGLISH

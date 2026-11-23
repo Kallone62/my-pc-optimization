@@ -1,27 +1,28 @@
-SURUCU HAZIRLIGI / DRIVER DOWNLOAD + VERIFY
+SÜRÜCÜ HAZIRLIĞI / DRIVER DOWNLOAD + VERIFY
 =============================================
 
-TURKCE
+TÜRKÇE
 
-Baslatici: Download_Gaming_Drivers.cmd
+Başlatıcı: Download_Gaming_Drivers.cmd
 PowerShell: Download-Gaming-Drivers.ps1
-Syntax kontrolu: tests\Check_Gaming_Driver_Syntax.cmd (repo kokunden)
+Syntax kontrolü: tests\Check_Gaming_Driver_Syntax.cmd (repo kökünden)
 
-Script, uygun driver paketlerini indirir ve dogrular; otomatik kurulum yapmaz.
-Sonuc raporu: Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv
-FAILED olan bir paket kurulum icin hazir degildir.
+Bu script uygun driver paketlerini indirir ve doğrular; otomatik kurulum yapmaz.
+Sonuç: Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv
+FAILED durumundaki paket kurulum için hazır değil.
 
-Manuel kurulum sirasi:
+Manuel kurulum sırası:
 1. AMD chipset
 2. Intel I226-V LAN
-3. Realtek UCM (eslesen ACPI device varsa)
-4. AMD iGPU (ayri test edilen baseline'a dahilse)
+3. Realtek UCM (eşleşen ACPI device varsa)
+4. AMD iGPU (ayrı test edilen baseline'a dahilse)
 5. NVIDIA RTX 3080 WHQL graphics-only
 6. ZOWIE XL2566X+ WHQL monitor INF
-7. NVIDIA driver + reboot sonrasi Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd
+7. NVIDIA driver + reboot sonrasında:
+   Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd
 
-AMD Adrenalin EXE, hazir driver-only INF degildir. iGPU icin hardware ID ve
-INF eslesmesi kontrol edilir.
+AMD Adrenalin EXE hazır bir driver-only INF değil. iGPU için hardware ID ve
+INF eşleşmesini ayrıca kontrol ediyorum.
 
 ENGLISH
 
@@ -29,15 +30,15 @@ Launcher: Download_Gaming_Drivers.cmd
 PowerShell source: Download-Gaming-Drivers.ps1
 Syntax check: tests\Check_Gaming_Driver_Syntax.cmd (from repository root)
 
-The script downloads and verifies hardware-matched drivers; installation
+This script downloads and verifies hardware-matched packages; installation
 remains manual. Review Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv.
-A FAILED package is not ready.
+A FAILED package is not ready for installation.
 
-Manual order: AMD chipset, I226-V LAN, Realtek UCM if present, optional
+Manual order: AMD chipset, I226-V LAN, Realtek UCM when present, optional
 separately tested AMD iGPU, NVIDIA graphics-only WHQL, ZOWIE monitor INF,
-then the separate NVIDIA Control Panel CMD after reboot.
+then the NVIDIA Control Panel CMD after installing the driver and rebooting.
 
-AMD Adrenalin EXE is not a pre-extracted driver-only INF. Verify hardware
-ID and matching INF before preparing the optional iGPU driver.
+AMD Adrenalin EXE is not a driver-only INF. Match hardware ID and INF before
+preparing the optional iGPU driver.
 
-Detaylar / Details: docs\DOWNLOAD_ONLY.md
+Ayrıntılar / Details: docs\DOWNLOAD_ONLY.md

@@ -20,7 +20,7 @@ Bu çalışma tek bir donanımda bitmiyor. Sistemimi yükselttiğimde aktif yap�
 
 - **Sürücüler:** `.drivers/Download_Gaming_Drivers.cmd` — uygun paketleri indirir ve doğrular; kurmaz.
 - **Uygulamalar:** `Download_PostFormat_Apps.cmd` — uygulama paketlerini indirir ve doğrular; kurmaz.
-- **Windows ve CS2:** `Run_CS2_Gaming_Scripts.cmd` — sistem ayarlarını gerçekten değiştirir. Etkileri incelenmeden çalıştırılmamalıdır.
+- **Windows ve CS2:** `Run_CS2_Gaming_Scripts.cmd` — Windows, device, network ve security baseline'ını uygular.
 - **Oyun yapılandırması:** `Game/autoexec.cfg` — CS2 ayarlarım.
 
 İndirme ve doğrulama sonuçları `Downloads/` altındaki raporlarda kayıtlı. Driver ve uygulama kurulumlarını bu sonuçlara göre manuel tamamlıyorum.
@@ -47,7 +47,7 @@ This is an ongoing project, not a configuration tied permanently to one hardware
 
 - **Drivers:** `.drivers/Download_Gaming_Drivers.cmd` — downloads and verifies matching packages; does not install them.
 - **Applications:** `Download_PostFormat_Apps.cmd` — downloads and verifies application packages; does not install them.
-- **Windows and CS2:** `Run_CS2_Gaming_Scripts.cmd` — makes actual system changes. Review its effects before running it.
+- **Windows and CS2:** `Run_CS2_Gaming_Scripts.cmd` — applies Windows, device, network, and security baseline settings.
 - **Game configuration:** `Game/autoexec.cfg` — my CS2 settings.
 
 Download and verification results are recorded under `Downloads/`. I use these reports to complete driver and application installation manually.
