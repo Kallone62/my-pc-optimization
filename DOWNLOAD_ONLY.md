@@ -24,7 +24,7 @@ Launch `Download_PostFormat_Apps.cmd`. It invokes `winget download` (never `wing
 
 Microsoft DirectX legacy runtime, TeamSpeak 3.6.2 and Logitech Onboard Memory Manager are downloaded from their respective official endpoints with publisher signature checks. TeamSpeak is additionally pinned to its expected SHA-256. Manual TeamSpeak installation must avoid optional Overwolf. FACEIT Anti-Cheat must be checked to ensure the unwanted separate FACEIT platform client was not installed.
 
-NVIDIA Control Panel HSA is Store-only and Wootility is browser-based; these and optional ExitLag are manual links in `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`, not fabricated offline EXEs.
+NVIDIA Control Panel HSA is Store-only. After manually installing and rebooting the NVIDIA driver, run `Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd` to install it through the official `msstore` WinGet source; the driver downloader copies that CMD into the download folder but **does not run it**. Wootility is browser-based and optional ExitLag remains a manual link in `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`.
 
 Install applications manually and verify installed versions, optional components and behavior after each batch. The preparation script does **not** know whether manual installation later succeeded.
 

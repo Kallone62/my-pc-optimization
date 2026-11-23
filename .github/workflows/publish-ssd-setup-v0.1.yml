@@ -37,6 +37,7 @@ jobs:
           cp -a .drivers/Assets/Monitor "$ROOT/.drivers/Assets/Monitor"
 
           cp .drivers/Download_Gaming_Drivers.cmd "$ROOT/.drivers/"
+          cp .drivers/Install_NVIDIA_Control_Panel.cmd "$ROOT/.drivers/"
           cp .drivers/Download-Gaming-Drivers.ps1 "$ROOT/.drivers/"
           cp Download_PostFormat_Apps.cmd "$ROOT/"
           cp Run_CS2_Gaming_Scripts.cmd "$ROOT/"
@@ -52,20 +53,23 @@ jobs:
              Suruculeri SADECE indirir ve dogrular, kurmaz.
           3. Download_PostFormat_Apps.cmd dosyasini calistirin.
              Uygulamalari SADECE indirir ve dogrular, kurmaz.
-          4. Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv ve
+          4. NVIDIA surucusunu manuel kurup yeniden baslattiktan sonra
+             Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd dosyasini calistirin.
+             Bu CMD Microsoft Store uzerinden denetim masasini kurar/dogrular.
+          5. Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv ve
              Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv dosyalarini
              inceleyip dogrulanmis paketleri manuel kurun.
-          5. Suruculer dogrulandiktan sonra, sistem ayarlarini uygulamak
+          6. Suruculer dogrulandiktan sonra, sistem ayarlarini uygulamak
              istiyorsaniz Run_CS2_Gaming_Scripts.cmd dosyasini calistirin.
              Bu adim Windows/CS2 ayarlarini gercekten degistirir.
-          6. Game\autoexec.cfg CS2 yapilandirma dosyasidir; kendi CS2
+          7. Game\autoexec.cfg CS2 yapilandirma dosyasidir; kendi CS2
              cfg dizininize uygun sekilde elle yerlestirin.
-          7. Training\KOVAAKS_CS2_STANDARD_V1.zip icinde otomatik
+          8. Training\KOVAAKS_CS2_STANDARD_V1.zip icinde otomatik
              Apply-KOVAAKS-CS2-STANDARD.bat ve geri yukleme scriptleri var.
-          8. After Game Update\shadercachereset.bat istege bagli bir
+          9. After Game Update\shadercachereset.bat istege bagli bir
              shader cache temizleyicidir. Her guncelleme sonrasi zorunlu
              degildir. Temizleme sonrasi shader derleme takilmalari olabilir.
-          9. .bios/current/ROG-B850-I su an yalnizca bekleyen BIOS
+          10. .bios/current/ROG-B850-I su an yalnizca bekleyen BIOS
              kayit talimatlarini icerir; dogrulanmis profil yoktur.
              .bios/legacy/Z690-Tachyon ayarlari eski donanim icindir,
              B850-I sistemine UYGULAMAYIN.
@@ -81,6 +85,7 @@ jobs:
           root=Path("dist/SSD Setup")
           required = [
               ".drivers/Download_Gaming_Drivers.cmd",
+              ".drivers/Install_NVIDIA_Control_Panel.cmd",
               ".drivers/Download-Gaming-Drivers.ps1",
               ".drivers/Assets/Monitor/XL2566X+_WHQL dirver_V001_Windows_240605180238.7z",
               ".scripts/Download-PostFormat-Apps.ps1",
