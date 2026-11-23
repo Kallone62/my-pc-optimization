@@ -1,37 +1,28 @@
-# PC Optimization — CS2 machine
+# CS2 PC Optimization
 
-Hardware-specific Windows 11 / CS2 setup for one PC, not a generic tuning guide.
+Bu depo, **belirli bir bilgisayar için hazırlanmış Windows 11 ve Counter-Strike 2 kurulum/optimizasyon dosyalarını** içerir. Her bilgisayarda performans artışı sağlayan genel bir tweak paketi değildir.
 
-- [Hardware](docs/SYSTEM.md) · [CS2/input/display reference](docs/REFERENCE_STATE.md)
-- [Manual installation details](docs/DOWNLOAD_ONLY.md) · [Validation status](docs/VALIDATION.md)
+**Hedef sistem:** Ryzen 7 9800X3D · ASUS ROG STRIX B850-I · NVIDIA RTX 3080 12 GB · BenQ ZOWIE XL2566X+ (400 Hz).
 
-## Canonical entrypoints
+## Nasıl kullanılır?
 
-| Task | Launcher | Effect |
-| --- | --- | --- |
-| Check downloader syntax | `tests\Check_Gaming_Driver_Syntax.cmd` | Read-only |
-| Prepare official driver packages | `.drivers\Download_Gaming_Drivers.cmd` | Download and verify; no install |
-| Prepare application packages | `Download_PostFormat_Apps.cmd` | Download and verify; no install |
-| Apply Windows/CS2 policies | `Run_CS2_Gaming_Scripts.cmd` | **Changes Windows, network, device, and security settings** |
+1. **Dosyaları edin:** Depoyu **Code → Download ZIP** ile indir ve klasör yapısını bozmadan çıkar. Gizli `.drivers` ve `.scripts` klasörlerini koru.
+2. **Sürücüler:** `.drivers\Download_Gaming_Drivers.cmd` dosyasını çalıştır. Paketler `Downloads\Drivers` içine **indirilir ve doğrulanır; otomatik kurulmaz**. `DRIVER_MANUAL_INSTALL_ORDER.csv` raporunu inceleyerek uygun paketleri manuel kur ve gerektiğinde yeniden başlat.
+3. **Uygulamalar:** `Download_PostFormat_Apps.cmd` dosyasını çalıştır. `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv` raporunu kontrol edip uygulamaları manuel kur. Visual C++ All-in-One arşivini çıkarıp gerekirse içindeki `install_all.bat` dosyasını yönetici olarak çalıştır. DirectX web yükleyicisi kurulum sırasında internet ister.
+4. **NVIDIA Denetim Masası:** NVIDIA ekran sürücüsünü kurup yeniden başlattıktan sonra `Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd` dosyasını çalıştır.
+5. **CS2 ayarları:** `Game\autoexec.cfg` dosyasını oyunun uygun yapılandırma klasörüne kendin yerleştir.
 
-Before manual installation, inspect the generated
-`Downloads\Drivers\DRIVER_MANUAL_INSTALL_ORDER.csv` and
-`Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`.
-NVIDIA Control Panel is a separate Microsoft Store app. After manually installing the NVIDIA graphics driver and rebooting, run `Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd` (staged by the driver downloader).
-AMD iGPU installation is optional and must be tested independently.
-Visual C++: extract the SHA-256-verified TechPowerUp All-in-One ZIP from `Downloads\Apps`, then run the included `install_all.bat` as Administrator.
+`Run_CS2_Gaming_Scripts.cmd` **isteğe bağlıdır**. Windows, aygıt, ağ ve güvenlik ayarlarını değiştirir; yalnızca etkilerini inceledikten sonra çalıştır.
 
-## Rules
+## Önemli uyarılar
 
-1. Establish a clean, official-driver Windows reference before applying policy scripts.
-2. Keep cosmetic setup separate from performance or network changes.
-3. Change one variable per CS2 comparison; record frametime tails, shot consistency and online behavior.
-4. Validate Windows runtime, reboot persistence and FACEIT before calling any change an improvement.
+- **`00_Fresh_Install_W11_Pro.cmd`, sabit `D:` hedefini biçimlendirebilir.** Normal optimizasyon amacıyla çalıştırma.
+- Windows/CS2 politika scriptleri Defender korumalarını ve otomatik güncellemeleri etkileyebilir. Bunların rekabetçi performansa net katkısı doğrulanmış değildir.
+- Paketin indirilmesi ve SHA-256/imza doğrulaması, Windows'a başarıyla kurulduğu anlamına gelmez. Güncel sürümün gerçek Windows ortamında uçtan uca doğrulaması tamamlanmış kabul edilmemelidir.
+- Eski Z690 BIOS kayıtlarını mevcut B850-I platformuna uygulama.
 
-**Safety:** `00_Fresh_Install_W11_Pro.cmd` can **format D:** and is not
-part of the release ZIP. Do not run it as a normal optimization step.
-`Run_CS2_Gaming_Scripts.cmd` can disable Defender features and automatic updates.
-Its effects are not limited to cosmetic cleanup.
+## Ayrıntılı belgeler
 
-Current B850-I BIOS settings are pending capture. Never apply
-`.bios/legacy/Z690-Tachyon/` settings to this platform.
+[Donanım](docs/SYSTEM.md) · [CS2 referans ayarları](docs/REFERENCE_STATE.md) · [Kurulum ayrıntıları](docs/DOWNLOAD_ONLY.md) · [Doğrulama durumu](docs/VALIDATION.md)
+
+Bu README kullanıcılar içindir. Geliştirme notları ve teknik ayrıntılar `docs/` klasöründe tutulur.
