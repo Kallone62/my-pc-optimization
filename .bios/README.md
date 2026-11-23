@@ -1,8 +1,15 @@
-# BIOS profiles
+# BIOS Arşivi / BIOS Archive
 
-BIOS material is kept platform-specific so settings from one motherboard/CPU generation are never treated as a transferable generic tuning profile.
+## Türkçe
 
-- `current/ROG-B850-I/` — current Ryzen 7 9800X3D / ASUS ROG STRIX B850-I platform. The verified BIOS baseline is still to be captured.
-- `legacy/Z690-Tachyon/` — preserved AMISCE/NVRAM exports from the previous Core i9-13900KF / Gigabyte Z690 Tachyon platform.
+BIOS ayarlarını platform bazında saklıyorum. **Aktif sistemin baseline'ı** ile önceki sistemlerin export'ları ayrı tutuluyor; bir anakartın BIOS değerlerini başka bir anakarta doğrudan aktarmıyorum.
 
-Do not apply the legacy Z690 files to the current B850-I platform.
+- `current/ROG-B850-I/` — Ryzen 7 9800X3D / ASUS ROG STRIX B850-I. BIOS baseline'ı henüz kaydedilip doğrulanmadı.
+- `legacy/Z690-Tachyon/` — önceki i9-13900KF / Gigabyte Z690 Tachyon sisteminin AMISCE/NVRAM export'ları.
+
+## English
+
+BIOS settings are archived **by hardware platform**. The current baseline and previous motherboard exports remain separate; values are not transferred directly between boards.
+
+- `current/ROG-B850-I/` — Ryzen 7 9800X3D / ASUS ROG STRIX B850-I; baseline capture and validation pending.
+- `legacy/Z690-Tachyon/` — preserved AMISCE/NVRAM exports from the previous i9-13900KF / Z690 Tachyon platform.

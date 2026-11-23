@@ -1,21 +1,19 @@
-# Legacy BIOS — Gigabyte Z690 Tachyon
+# Önceki BIOS / Legacy BIOS — Gigabyte Z690 Tachyon
 
-These files belong to the previous Intel platform and are preserved only for historical comparison/reference.
+## Türkçe
 
-## Platform at the time
+Bu klasörde **önceki Intel platformumun** BIOS export'ları var. Güncel B850-I yapılandırmasının parçası değiller; eski testleri ve ayarları takip etmek için saklıyorum.
 
-- CPU: Intel Core i9-13900KF
-- Motherboard: Gigabyte Z690 Tachyon
-- Memory: the **same physical 2×16 GB G.Skill DDR5 kit used in the current system**; legacy notes referred to it simply as Hynix A-Die
-- GPU: RTX 3080
-- SSD: Samsung 990 Pro 1 TB
-- Cooler: Lian Li GALAHAD 360
-- Case: Lian Li LANCOOL III
-- PSU: FSP Hydro PTM PRO
+**O dönemki sistem:** Intel Core i9-13900KF · Gigabyte Z690 Tachyon · güncel sistemle aynı G.Skill 2×16 GB DDR5 / Hynix A-Die kit · RTX 3080 · Samsung 990 Pro 1 TB · Lian Li GALAHAD 360 · Lian Li LANCOOL III · FSP Hydro PTM PRO.
 
-## Files
-
+**Export'lar (27 Şubat 2025):**
 - `F29Z690TachyonSafe.txt`
 - `F29Z690TachyonExperimental.txt`
 
-Both are AMISCE-style NVRAM/setup exports created on 2025-02-27. They contain board/firmware-specific tokens and offsets and must **not** be imported or translated mechanically to the ASUS B850-I.
+İki dosya da AMISCE tarzı NVRAM/setup export'u içeriyor. Token ve offset'ler firmware'e özgü olduğundan ASUS B850-I BIOS'una import edilmiyor.
+
+## English
+
+These are **historical BIOS exports** from the previous i9-13900KF / Gigabyte Z690 Tachyon system, using the same physical G.Skill/Hynix A-Die DDR5 kit, RTX 3080, Samsung 990 Pro 1 TB, Lian Li GALAHAD 360, LANCOOL III and FSP Hydro PTM PRO.
+
+Both AMISCE-style NVRAM/setup exports were created on February 27, 2025. Their tokens and offsets are firmware-specific and cannot be imported mechanically into the ASUS B850-I.
