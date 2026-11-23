@@ -223,6 +223,7 @@ function Download-OfficialFile {
     # default for interactive full-speed setup downloads.
     # Use Windows' built-in curl for file payloads; preserve the existing
     # source allowlist, SHA-256, Authenticode and signed-cache checks.
+    $clock = [Diagnostics.Stopwatch]::StartNew()
     $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
     if ($curl) {
         $args = @('--fail','--location','--silent','--show-error','--retry','2',
@@ -247,6 +248,7 @@ function Download-OfficialFile {
             -ErrorAction Stop
     }
 
+    $clock.Stop()
     if (-not (Test-Path -LiteralPath $Destination)) {
         throw "Download did not create: $Destination"
     }
@@ -257,6 +259,8 @@ function Download-OfficialFile {
     }
 
     $actualSha = Get-FileSha256 -Path $Destination
+    $seconds = [math]::Max($clock.Elapsed.TotalSeconds,0.01)
+    Write-Host ("File transfer: {0:N1} MiB in {1:N1}s ({2:N1} MiB/s)" -f ($size/1MB),$seconds,(($size/1MB)/$seconds))
     Write-Host ("SHA-256    : {0}" -f $actualSha)
 
     if ($ExpectedSha256 -and $actualSha -ne $ExpectedSha256.ToUpperInvariant()) {

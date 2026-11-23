@@ -43,6 +43,7 @@ function Invoke-PublisherDownload {
   $allow=@('download.microsoft.com','files.teamspeak-services.com','download01.logi.com')
   if($allow -notcontains $u.Host.ToLowerInvariant()){throw "Unapproved publisher host: $($u.Host)"}
   $dest=Join-Path $DownloadRoot $Filename
+  $clock=[Diagnostics.Stopwatch]::StartNew()
   $curl=Get-Command curl.exe -ErrorAction SilentlyContinue
   if($curl){
    & $curl.Source --fail --location --silent --show-error --retry 2 --connect-timeout 30 --max-time 1800 --proto '=https' --proto-redir '=https' --output $dest $Url
@@ -50,7 +51,11 @@ function Invoke-PublisherDownload {
   }else{
    Invoke-WebRequest -Uri $Url -OutFile $dest -UseBasicParsing -TimeoutSec 1800 -ErrorAction Stop
   }
-  if((Get-Item -LiteralPath $dest -ErrorAction Stop).Length -lt 102400){throw 'Downloaded file unexpectedly small.'}
+  $clock.Stop()
+  $size=(Get-Item -LiteralPath $dest -ErrorAction Stop).Length
+  if($size -lt 102400){throw 'Downloaded file unexpectedly small.'}
+  $seconds=[math]::Max($clock.Elapsed.TotalSeconds,0.01)
+  Write-Host ("File transfer: {0:N1} MiB in {1:N1}s ({2:N1} MiB/s)" -f ($size/1MB),$seconds,(($size/1MB)/$seconds))
   $hash=Get-FileHashValue $dest
   if($ExpectedSha -and $hash -ne $ExpectedSha.ToUpperInvariant()){throw "SHA256 mismatch: $hash"}
   $signature=Get-AuthenticodeSignature -LiteralPath $dest -ErrorAction Stop
@@ -70,12 +75,15 @@ function Invoke-WinGetDownload {
   New-Item -ItemType Directory -Path $folder -Force | Out-Null
   $args=@('download','--id',$Id,'--exact','--source','winget','--download-directory',$folder,'--accept-source-agreements','--accept-package-agreements','--disable-interactivity')
   Write-Host "Downloading WinGet package $Id (NO INSTALL)"
+  $clock=[Diagnostics.Stopwatch]::StartNew()
   $prev=$ErrorActionPreference
   try {
     $ErrorActionPreference='Continue'
     & $script:WinGetPath @args 2>&1 | ForEach-Object {Write-Host ("  {0}" -f $_)}
     $rc=[int]$LASTEXITCODE
   } finally {$ErrorActionPreference=$prev}
+  $clock.Stop()
+  Write-Host ("WinGet resolve+download: {0:N1}s for {1}" -f $clock.Elapsed.TotalSeconds,$Id)
   if($rc -ne 0){throw "WinGet download failed: $rc; security hash enforcement remains enabled."}
   $files=@(Get-ChildItem -LiteralPath $folder -File -Recurse -ErrorAction Stop | Where-Object {$_.Extension -match '(?i)^\.(exe|msi|msix|msixbundle|appx|appxbundle|zip)$'})
   if($files.Count -eq 0){throw 'No installer found after WinGet download returned success.'}
@@ -115,6 +123,7 @@ function Invoke-TechPowerUpVisualCpp {
    else{Remove-Item -LiteralPath $dest -Force -ErrorAction Stop}
   }
   if(-not (Test-Path -LiteralPath $dest -PathType Leaf)){
+   $clock=[Diagnostics.Stopwatch]::StartNew()
    $curl=Get-Command curl.exe -ErrorAction SilentlyContinue
    if($curl){
     & $curl.Source --fail --location --silent --show-error --retry 2 --connect-timeout 30 --max-time 1800 --proto '=https' --proto-redir '=https' --output $dest $url
@@ -122,6 +131,10 @@ function Invoke-TechPowerUpVisualCpp {
    }else{
     Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -TimeoutSec 1800 -ErrorAction Stop
    }
+   $clock.Stop()
+   $size=(Get-Item -LiteralPath $dest -ErrorAction Stop).Length
+   $seconds=[math]::Max($clock.Elapsed.TotalSeconds,0.01)
+   Write-Host ("TechPowerUp transfer: {0:N1} MiB in {1:N1}s ({2:N1} MiB/s)" -f ($size/1MB),$seconds,(($size/1MB)/$seconds))
   }
   if((Get-Item -LiteralPath $dest -ErrorAction Stop).Length -lt 10MB){throw "TechPowerUp ZIP unexpectedly small."}
   $hash=Get-FileHashValue $dest
