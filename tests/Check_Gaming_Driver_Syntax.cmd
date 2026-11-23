@@ -1,37 +1,18 @@
 @echo off
 setlocal EnableExtensions DisableDelayedExpansion
-title Gaming Driver Downloader - Syntax Check
+title Driver and App Downloaders - PowerShell Parser Check
 
-for %%I in ("%~dp0..") do set "ROOT=%%~fI"
-set "DRIVER_SCRIPT=%ROOT%\.drivers\Download-Gaming-Drivers.ps1"
+for %%I in ("%~dp0..") do set "REPO_ROOT=%%~fI"
 set "POWERSHELL_EXE=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
-
-if not exist "%DRIVER_SCRIPT%" (
-    echo.
-    echo ERROR: Missing:
-    echo "%DRIVER_SCRIPT%"
-    echo.
+if not exist "%POWERSHELL_EXE%" (
+    echo [ERROR] Windows PowerShell 5.1 is missing.
     pause
     exit /b 2
 )
 
-if not exist "%POWERSHELL_EXE%" (
-    echo.
-    echo ERROR: Windows PowerShell 5.1 was not found:
-    echo "%POWERSHELL_EXE%"
-    echo.
-    pause
-    exit /b 3
-)
-
-echo ============================================================
-echo   GAMING DRIVER DOWNLOADER - POWERSHELL SYNTAX CHECK
-echo ============================================================
-echo.
 "%POWERSHELL_EXE%" -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$tokens=$null; $errors=$null; [void][System.Management.Automation.Language.Parser]::ParseFile($env:DRIVER_SCRIPT,[ref]$tokens,[ref]$errors); if($errors.Count -gt 0){ $errors ^| ForEach-Object { Write-Host ('ERROR line {0}, column {1}: {2}' -f $_.Extent.StartLineNumber,$_.Extent.StartColumnNumber,$_.Message) -ForegroundColor Red }; exit 1 } else { Write-Host 'PowerShell parser: OK' -ForegroundColor Green; exit 0 }"
+  "$files=@((Join-Path $env:REPO_ROOT '.drivers\Download-Gaming-Drivers.ps1'),(Join-Path $env:REPO_ROOT '.scripts\Download-PostFormat-Apps.ps1'),(Join-Path $env:REPO_ROOT '.scripts\Download-Transport.ps1')); $failed=$false; foreach($file in $files){ if(-not (Test-Path -LiteralPath $file -PathType Leaf)){ Write-Host ('MISSING: '+$file) -ForegroundColor Red; $failed=$true; continue }; $tokens=$null; $errors=$null; [void][System.Management.Automation.Language.Parser]::ParseFile($file,[ref]$tokens,[ref]$errors); if($errors.Count -gt 0){ Write-Host ('FAILED: '+$file) -ForegroundColor Red; foreach($item in $errors){ Write-Host ('  line {0}: {1}' -f $item.Extent.StartLineNumber,$item.Message) }; $failed=$true } else { Write-Host ('OK: '+$file) -ForegroundColor Green } }; if($failed){exit 1}else{exit 0}"
 set "RC=%ERRORLEVEL%"
-
 echo.
 pause
 exit /b %RC%
