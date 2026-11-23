@@ -19,7 +19,7 @@ Before manual installation, inspect the generated
 `Downloads\Apps\APP_MANUAL_INSTALL_ORDER.csv`.
 NVIDIA Control Panel is a separate Microsoft Store app. After manually installing the NVIDIA graphics driver and rebooting, run `Downloads\Drivers\Install_NVIDIA_Control_Panel.cmd` (staged by the driver downloader).
 AMD iGPU installation is optional and must be tested independently.
-Visual C++ one-command installation: `Downloads\Apps\VisualCpp_AllInOne\Install_All_VisualCpp.cmd` (run as Administrator after all downloads are READY).
+Visual C++: extract the SHA-256-verified TechPowerUp All-in-One ZIP from `Downloads\Apps`, then run the included `install_all.bat` as Administrator.
 
 ## Rules
 

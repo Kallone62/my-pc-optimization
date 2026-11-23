@@ -9,6 +9,7 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$ProgressPreference = 'SilentlyContinue'
 $script:WebSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 $ScriptVersion = '3.0-download-only'
 $ScriptRoot = $PSScriptRoot
@@ -218,10 +219,22 @@ function Download-OfficialFile {
     }
     if ($Referer) { $headers['Referer'] = $Referer }
 
-    $bits = Get-Command Start-BitsTransfer -ErrorAction SilentlyContinue
-
-    if ($bits -and -not $Referer) {
-        Start-BitsTransfer -Source $Url -Destination $Destination -ErrorAction Stop
+    # BITS background transfers can be throttled by Windows and are a poor
+    # default for interactive full-speed setup downloads.
+    # Use Windows' built-in curl for file payloads; preserve the existing
+    # source allowlist, SHA-256, Authenticode and signed-cache checks.
+    $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
+    if ($curl) {
+        $args = @('--fail','--location','--silent','--show-error','--retry','2',
+                  '--connect-timeout','30','--max-time','1800',
+                  '--proto','=https','--proto-redir','=https',
+                  '--user-agent',$headers['User-Agent'],'--output',$Destination)
+        if ($Referer) { $args += @('--referer',$Referer) }
+        $args += $Url
+        & $curl.Source @args
+        if ($LASTEXITCODE -ne 0) {
+            throw "Download failed (curl exit $LASTEXITCODE): $Url"
+        }
     }
     else {
         Invoke-WebRequest `

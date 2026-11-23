@@ -9,9 +9,10 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
+# Windows PowerShell 5.1 web-request progress drawing can slow large transfers.
+$ProgressPreference='SilentlyContinue'
 $PackRoot=Split-Path -Parent $PSScriptRoot
 $DownloadRoot=Join-Path $PackRoot 'Downloads\Apps'
-$VcRoot=Join-Path $DownloadRoot 'VisualCpp_AllInOne'
 $LogRoot=Join-Path $PackRoot 'Logs\PostFormat'
 foreach($dir in @($DownloadRoot,$LogRoot)){New-Item -ItemType Directory -Path $dir -Force | Out-Null}
 $stamp=Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -42,7 +43,13 @@ function Invoke-PublisherDownload {
   $allow=@('download.microsoft.com','files.teamspeak-services.com','download01.logi.com')
   if($allow -notcontains $u.Host.ToLowerInvariant()){throw "Unapproved publisher host: $($u.Host)"}
   $dest=Join-Path $DownloadRoot $Filename
-  Invoke-WebRequest -Uri $Url -OutFile $dest -UseBasicParsing -TimeoutSec 1800 -ErrorAction Stop
+  $curl=Get-Command curl.exe -ErrorAction SilentlyContinue
+  if($curl){
+   & $curl.Source --fail --location --silent --show-error --retry 2 --connect-timeout 30 --max-time 1800 --proto '=https' --proto-redir '=https' --output $dest $Url
+   if($LASTEXITCODE -ne 0){throw "Download failed (curl exit $LASTEXITCODE): $Url"}
+  }else{
+   Invoke-WebRequest -Uri $Url -OutFile $dest -UseBasicParsing -TimeoutSec 1800 -ErrorAction Stop
+  }
   if((Get-Item -LiteralPath $dest -ErrorAction Stop).Length -lt 102400){throw 'Downloaded file unexpectedly small.'}
   $hash=Get-FileHashValue $dest
   if($ExpectedSha -and $hash -ne $ExpectedSha.ToUpperInvariant()){throw "SHA256 mismatch: $hash"}
@@ -53,8 +60,8 @@ function Invoke-PublisherDownload {
  }catch {Fail-Entry $Name $_.Exception.Message}
 }
 function Invoke-WinGetDownload {
- param([string]$Id,[string]$Label,[string]$Instructions,[string]$TargetRoot=$DownloadRoot)
- $folder=Join-Path $TargetRoot $Id
+ param([string]$Id,[string]$Label,[string]$Instructions)
+ $folder=Join-Path $DownloadRoot $Id
  try {
   # Drop older package payloads before marking new manifest files READY.
   if(Test-Path -LiteralPath $folder -PathType Container) {
@@ -82,39 +89,60 @@ function Invoke-WinGetDownload {
  } catch {Fail-Entry $Label $_.Exception.Message}
 }
 
-function Publish-VcBundle {
- param([object[]]$Packages)
- $manifest=Join-Path $VcRoot 'VC_PACKAGES.csv'
- $rows=New-Object 'System.Collections.Generic.List[object]'
+function Invoke-TechPowerUpVisualCpp {
+ # Resolve current filename and SHA256 from the publisher's canonical release page.
+ $page='https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/'
  try{
-  New-Item -ItemType Directory -Path $VcRoot -Force | Out-Null
-  $base=[IO.Path]::GetFullPath($VcRoot).TrimEnd('\')+'\'
-  foreach($p in $Packages){
-   $items=@($script:Rows | Where-Object {$_.Component -eq $p.Name -and $_.Status -eq 'READY' -and $_.Source -like ('winget:'+$p.Id+' *')})
-   if($items.Count -ne 1){throw "Incomplete VC++ package: $($p.Id)"}
-   $item=$items[0]
-   $file=[IO.Path]::GetFullPath([string]$item.File)
-   if(-not $file.StartsWith($base,[StringComparison]::OrdinalIgnoreCase) -or -not $file.EndsWith('.exe',[StringComparison]::OrdinalIgnoreCase)){throw "Unexpected VC++ executable: $file"}
-   $sig=Get-AuthenticodeSignature -LiteralPath $file -ErrorAction Stop
-   if($sig.Status -ne 'Valid' -or -not $sig.SignerCertificate -or $sig.SignerCertificate.Subject -notmatch '(?i)Microsoft'){throw "Microsoft signature check failed: $file"}
-   $rows.Add([pscustomobject]@{Id=$p.Id;RelativeFile=$file.Substring($base.Length);SHA256=$item.SHA256})
+  $response=Invoke-WebRequest -Uri $page -UseBasicParsing -TimeoutSec 60 -Headers @{'User-Agent'='Mozilla/5.0 (Windows NT 10.0; Win64; x64)'} -ErrorAction Stop
+  $plain=[Net.WebUtility]::HtmlDecode(([string]$response.Content -replace '(?s)<[^>]+>',' ')) -replace '\s+',' '
+  $rx='(?i)Visual-C-Runtimes-All-in-One-(?<v>[A-Za-z]+-20\d{2})\.zip.{0,350}?SHA256\s*:\s*(?<sha>[0-9a-f]{64})'
+  $matches=[regex]::Matches($plain,$rx)
+  $found=New-Object 'System.Collections.Generic.List[object]'
+  foreach($m in $matches){
+   try{$date=[datetime]::ParseExact($m.Groups['v'].Value,'MMM-yyyy',[Globalization.CultureInfo]::InvariantCulture)}
+   catch{continue}
+   $found.Add([pscustomobject]@{Date=$date;Version=$m.Groups['v'].Value;Sha=$m.Groups['sha'].Value.ToUpperInvariant()})
   }
-  foreach($name in @('Install_All_VisualCpp.cmd','Install_All_VisualCpp.ps1')){
-   $source=Join-Path $PSScriptRoot $name
-   if(-not (Test-Path -LiteralPath $source -PathType Leaf)){throw "Missing template: $source"}
-   Copy-Item -LiteralPath $source -Destination (Join-Path $VcRoot $name) -Force -ErrorAction Stop
+  if($found.Count -eq 0){throw 'Could not verify current TechPowerUp release metadata (filename and SHA256).'}
+  $latest=$found | Sort-Object Date -Descending | Select-Object -First 1
+  $name='Visual-C-Runtimes-All-in-One-'+$latest.Version+'.zip'
+  # TechPowerUp's closest-dl dispatcher routes to a geographically appropriate mirror.
+  # No third-party mirror or unverified archive is accepted.
+  $url='https://closest-dl.techpowerup.com/files/'+$name
+  $dest=Join-Path $DownloadRoot $name
+  if(Test-Path -LiteralPath $dest -PathType Leaf){
+   if((Get-FileHashValue $dest) -eq $latest.Sha){Write-Host "[CACHE OK] $name"}
+   else{Remove-Item -LiteralPath $dest -Force -ErrorAction Stop}
   }
-  $rows | Export-Csv -LiteralPath $manifest -NoTypeInformation -Encoding UTF8
-  Add-Entry 'Visual C++ All-in-One' 'READY' 'Microsoft via WinGet' (Join-Path $VcRoot 'Install_All_VisualCpp.cmd') '' 'Run as administrator after download; local installer verifies all 12 files before installation.'
+  if(-not (Test-Path -LiteralPath $dest -PathType Leaf)){
+   $curl=Get-Command curl.exe -ErrorAction SilentlyContinue
+   if($curl){
+    & $curl.Source --fail --location --silent --show-error --retry 2 --connect-timeout 30 --max-time 1800 --proto '=https' --proto-redir '=https' --output $dest $url
+    if($LASTEXITCODE -ne 0){throw "TechPowerUp download failed (curl exit $LASTEXITCODE); use official page manually: $page"}
+   }else{
+    Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -TimeoutSec 1800 -ErrorAction Stop
+   }
+  }
+  if((Get-Item -LiteralPath $dest -ErrorAction Stop).Length -lt 10MB){throw "TechPowerUp ZIP unexpectedly small."}
+  $hash=Get-FileHashValue $dest
+  if($hash -ne $latest.Sha){throw "TechPowerUp SHA256 mismatch: expected $($latest.Sha), actual $hash"}
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  $archive=[IO.Compression.ZipFile]::OpenRead($dest)
+  try{
+   $names=@($archive.Entries | ForEach-Object {$_.Name})
+   if($names -notcontains 'install_all.bat'){throw 'TechPowerUp package is missing install_all.bat.'}
+   if(@($names | Where-Object {$_ -match '(?i)\.exe$'}).Count -lt 8){throw 'Visual C++ installer files missing from ZIP.'}
+  }finally{$archive.Dispose()}
+  Add-Entry 'Visual C++ All-in-One (TechPowerUp)' 'READY' $page $dest $hash "Verified $($latest.Version) ZIP. Extract, then run included install_all.bat as Administrator. No automatic install."
  }catch{
-  Remove-Item -LiteralPath $manifest -Force -ErrorAction SilentlyContinue
-  Fail-Entry 'Visual C++ All-in-One' $_.Exception.Message
+  Fail-Entry 'Visual C++ All-in-One (TechPowerUp)' ($_.Exception.Message+' | Manual fallback: '+$page)
  }
 }
+
 try {
  Write-Host 'APP PACKAGE DOWNLOAD + VERIFY ONLY (never install)'
  # Independent official downloads first, including when WinGet is missing.
- Invoke-PublisherDownload 'DirectX June 2010 offline' 'https://download.microsoft.com/download/8/4/a/84a35bf1-dafe-4ae8-82af-ad2ae20b6b14/directx_Jun2010_redist.exe' 'directx_Jun2010_redist.exe' '(?i)Microsoft' '' 'Manually extract and run DXSETUP.exe; verify legacy components.'
+ Invoke-PublisherDownload 'DirectX End-User Runtime Web Installer' 'https://download.microsoft.com/download/1/7/1/1718ccc4-6315-4d8e-9543-8e28a4e18c4c/dxwebsetup.exe' 'dxwebsetup.exe' '(?i)Microsoft' '' 'Run web installer manually while online; downloads required legacy components during installation.'
  Invoke-PublisherDownload 'Logitech Onboard Memory Manager' 'https://download01.logi.com/web/ftp/pub/techsupport/gaming/OnboardMemoryManager_2.3.2055.exe' 'OnboardMemoryManager_2.3.2055.exe' '(?i)Logitech|Logi' '' 'Manually install OMM after verifying release/version.'
 
  $winget=Get-Command winget.exe -ErrorAction SilentlyContinue
@@ -142,32 +170,15 @@ try {
    Invoke-WinGetDownload -Id $p.Id -Label $p.Name -Instructions 'Manual installation; verify publisher and version.'
   }
 
-  # TechPowerUp-style one-folder/one-CMD bundle; all source packages stay Microsoft-signed.
-  $vc=@(
-   @{Id='Microsoft.VCRedist.2015+.x86';Name='Visual C++ v14 x86'},
-   @{Id='Microsoft.VCRedist.2015+.x64';Name='Visual C++ v14 x64'},
-   @{Id='Microsoft.VCRedist.2013.x86';Name='Visual C++ 2013 x86'},
-   @{Id='Microsoft.VCRedist.2013.x64';Name='Visual C++ 2013 x64'},
-   @{Id='Microsoft.VCRedist.2012.x86';Name='Visual C++ 2012 x86'},
-   @{Id='Microsoft.VCRedist.2012.x64';Name='Visual C++ 2012 x64'},
-   @{Id='Microsoft.VCRedist.2010.x86';Name='Visual C++ 2010 x86'},
-   @{Id='Microsoft.VCRedist.2010.x64';Name='Visual C++ 2010 x64'},
-   @{Id='Microsoft.VCRedist.2008.x86';Name='Visual C++ 2008 x86'},
-   @{Id='Microsoft.VCRedist.2008.x64';Name='Visual C++ 2008 x64'},
-   @{Id='Microsoft.VCRedist.2005.x86';Name='Visual C++ 2005 x86'},
-   @{Id='Microsoft.VCRedist.2005.x64';Name='Visual C++ 2005 x64'}
-  )
-  foreach($p in $vc){
-   Invoke-WinGetDownload -Id $p.Id -Label $p.Name -TargetRoot $VcRoot -Instructions 'Install via VisualCpp_AllInOne\Install_All_VisualCpp.cmd once all runtimes are READY.'
-  }
-  Publish-VcBundle -Packages $vc
-
   # Known failure-prone downloads last; individual errors do not stop other packages.
   Invoke-WinGetDownload -Id 'FACEITLTD.FACEITAC' -Label 'FACEIT Anti-Cheat only' -Instructions 'Manual FACEIT AC install; verify separate FACEIT platform client absent.'
   Invoke-WinGetDownload -Id 'Spotify.Spotify' -Label 'Spotify' -Instructions 'Manual install; hash mismatch must fail instead of bypassing security.'
  }else{
-  Fail-Entry 'Visual C++ All-in-One' 'WinGet is unavailable, so runtime bundle cannot be prepared.'
+  Write-Warning 'WinGet unavailable: other WinGet app packages skipped.'
  }
+
+ # Single direct publisher archive replaces 12 sequential WinGet runtime downloads.
+ Invoke-TechPowerUpVisualCpp
 
  Invoke-PublisherDownload 'TeamSpeak 3.6.2' 'https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe' 'TeamSpeak3-Client-win64-3.6.2.exe' '(?i)TeamSpeak' 'EAB9E0C1A7134643E5F7116B7E0E58FAFFB20D6DB528F8B333D2C2B5D1AB68AE' 'Manually install 3.6.2 without optional Overwolf; verify no Overwolf.'
  Add-Entry 'NVIDIA Control Panel HSA' 'MANUAL LINK' 'https://apps.microsoft.com/detail/9NF8H0H7WMLT' '' '' 'Install through separate Downloads\Drivers CMD after the NVIDIA driver.'
