@@ -1,17 +1,17 @@
-name: Publish SSD Setup v0.1
+name: Publish SSD Setup v0.2
 
 on:
   push:
     branches: [main]
     paths:
-      - .github/workflows/publish-ssd-setup-v0.1.yml
+      - .github/workflows/publish-ssd-setup-v0.2.yml
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: ssd-setup-v0.1-release
+  group: ssd-setup-v0.2-release
   cancel-in-progress: false
 
 jobs:
@@ -39,12 +39,14 @@ jobs:
           cp .drivers/Download_Gaming_Drivers.cmd "$ROOT/.drivers/"
           cp .drivers/Install_NVIDIA_Control_Panel.cmd "$ROOT/.drivers/"
           cp .drivers/Download-Gaming-Drivers.ps1 "$ROOT/.drivers/"
+          cp .drivers/README.txt "$ROOT/.drivers/"
+          cp README.md "$ROOT/README.md"
           cp Download_PostFormat_Apps.cmd "$ROOT/"
           cp Run_CS2_Gaming_Scripts.cmd "$ROOT/"
           cp -a docs "$ROOT/docs"
 
           cat > "$ROOT/INSTALL_README.txt" <<'INSTRUCTIONS'
-          SSD Setup v0.1 — CS2 espor sistemi / CS2 esports system
+          SSD Setup v0.2 — CS2 espor sistemi / CS2 esports system
           Güncel platform / Current platform: Ryzen 7 9800X3D, ASUS ROG STRIX B850-I, RTX 3080 12 GB
           
           TÜRKÇE
@@ -97,6 +99,9 @@ jobs:
               ".drivers/Download_Gaming_Drivers.cmd",
               ".drivers/Install_NVIDIA_Control_Panel.cmd",
               ".drivers/Download-Gaming-Drivers.ps1",
+              ".drivers/README.txt",
+              "README.md",
+              "docs/OPTIMIZATION_GOALS.md",
               ".drivers/Assets/Monitor/XL2566X+_WHQL dirver_V001_Windows_240605180238.7z",
               ".scripts/Download-PostFormat-Apps.ps1",
               ".scripts/Download-Transport.ps1",
@@ -129,10 +134,10 @@ jobs:
           print("Required install, training and maintenance files verified")
           PY
 
-          (cd dist && zip -q -r SSD_Setup_v0.1.zip "SSD Setup")
+          (cd dist && zip -q -r SSD_Setup_v0.2.zip "SSD Setup")
           python3 - <<'PY'
           from zipfile import ZipFile
-          p="dist/SSD_Setup_v0.1.zip"
+          p="dist/SSD_Setup_v0.2.zip"
           with ZipFile(p) as z:
               assert z.testzip() is None
               names=set(z.namelist())
@@ -142,13 +147,15 @@ jobs:
                     "SSD Setup/.drivers/Download_Gaming_Drivers.cmd",
                     "SSD Setup/.drivers/Install_NVIDIA_Control_Panel.cmd",
                     "SSD Setup/Run_CS2_Gaming_Scripts.cmd",
-                    "SSD Setup/docs/DOWNLOAD_ONLY.md"]
+                    "SSD Setup/docs/DOWNLOAD_ONLY.md",
+                    "SSD Setup/docs/OPTIMIZATION_GOALS.md",
+                    "SSD Setup/README.md"]
               assert set(must).issubset(names)
               assert not any(n.endswith("00_Fresh_Install_W11_Pro.cmd") for n in names)
               assert not any("FINAL_AUDIT" in n or "Test_WU_Driver_Scan_Once" in n for n in names)
               print("ZIP integrity and release scope OK:", len(names), "entries")
           PY
-          sha256sum dist/SSD_Setup_v0.1.zip
+          sha256sum dist/SSD_Setup_v0.2.zip | tee dist/SSD_Setup_v0.2_SHA256SUMS.txt
 
       - name: Publish GitHub Release
         env:
@@ -156,31 +163,46 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if gh release view v0.1 >/dev/null 2>&1; then
-            echo "Release v0.1 already exists; leaving immutable release unchanged."
+          if gh release view v0.2 >/dev/null 2>&1; then
+            echo "Release v0.2 already exists; leaving immutable release unchanged."
             exit 0
           fi
           cat > /tmp/ssd-setup-release-notes.md <<'NOTES'
-          SSD Setup v0.1 — CS2 Espor Sistemi / Esports System
+          SSD Setup v0.2 — CS2 Espor Sistemi Optimizasyonu / Esports System Optimization
           
-          TURKCE
-          Güncel donanım icin driver/app paket hazırlığı, Windows ve CS2 baseline
-          scriptleri, peripheral kayitlari, KovaaK apply/restore ve BIOS arşivi.
-          İndirme scriptleri kurulum yapmaz; Windows/CS2 scriptleri sistem
-          ayarlarını değiştirir. Eski Z690 BIOS kayıtları arşivde tutulur.
-          Kurulum: ZIP icindeki INSTALL_README.txt
+          TÜRKÇE
+          Güncel Ryzen 7 9800X3D / B850-I / RTX 3080 sistemi için
+          driver, uygulama, Windows ve CS2 yapılandırmalarım.
+          
+          v0.1'e göre değişiklikler:
+          - Driver/app downloader'larında ortak HTTPS transport, kontrollü
+          retry, resume ve doğrulanmış dosyayı tekrar kullanma.
+          - WinGet için geçici WinINet backend seçimi ve ayar restore/backup.
+          - TechPowerUp Visual C++ All-in-One ve DirectX web installer.
+          - Türkçe/İngilizce README, optimizasyon hedefleri ve baseline belgeleri.
+          - Önceki sistemin BIOS export'ları arşivde korunuyor.
+          
+          Driver/app downloader'ları paketleri indirir ve doğrular; kurmaz.
+          Windows/CS2 launcher'ı sistem ayarlarını gerçekten değiştirir.
+          D: formatlayan Windows imaging aracı bu ZIP'e dahil değil.
+          CI paket bütünlüğünü kontrol eder; Windows/FACEIT canlı testleri ayrı.
+          Kurulum rehberi: README.md ve INSTALL_README.txt.
           
           ENGLISH
-          Driver/app package preparation, Windows and CS2 baseline scripts,
-          peripheral records, KovaaK apply/restore tools and archived BIOS profiles.
-          Downloads are separate from installation; Windows/CS2 scripts apply
-          system configuration. Previous Z690 BIOS records remain archived.
-          Setup instructions: INSTALL_README.txt inside the ZIP.
+          Setup for my current Ryzen 7 9800X3D / B850-I / RTX 3080 PC.
+          Changes since v0.1: shared HTTPS downloader with retry, resume and
+          verified-cache reuse; temporary WinINet backend for WinGet;
+          TechPowerUp Visual C++ bundle and DirectX web installer;
+          bilingual README, optimization goals and baseline documents.
+          The previous platform's BIOS exports remain archived.
           
-          The D:-formatting Windows imaging tool is excluded from the release.
-          
+          Downloaders verify packages without installing them. The Windows/CS2
+          launcher applies system changes. The D:-formatting Windows imaging
+          tool is excluded. CI verifies ZIP integrity; Windows/FACEIT runtime
+          validation remains separate.
+          Setup: README.md and INSTALL_README.txt inside the ZIP.
           NOTES
-          gh release create v0.1 dist/SSD_Setup_v0.1.zip \
+          gh release create v0.2 dist/SSD_Setup_v0.2.zip dist/SSD_Setup_v0.2_SHA256SUMS.txt \
             --target "$GITHUB_SHA" \
-            --title "SSD Setup v0.1" \
+            --title "SSD Setup v0.2" \
             --notes-file /tmp/ssd-setup-release-notes.md
