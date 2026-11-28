@@ -1372,7 +1372,6 @@ try {
         # Retired / legacy
         'Microsoft.549981C3F5F10',
         'Microsoft.SkypeApp',
-        'Microsoft.XboxApp',
 
         'Microsoft.3DBuilder',
         'Microsoft.Microsoft3DViewer',
