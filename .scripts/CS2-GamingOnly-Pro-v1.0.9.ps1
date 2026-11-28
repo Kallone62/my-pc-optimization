@@ -1241,36 +1241,15 @@ try {
         }
     }
 
-    # Game DVR/capture is disabled through user gaming state below. Keep the
-    # BcastDVRUserService per-user service template at its stock Manual/triggered
-    # configuration rather than hard-disabling service topology.
+    # Preserve the BcastDVRUserService per-user service template at its stock
+    # Manual/triggered configuration.
 
     # ========================================================================
     # 05 - GAMING
     # ========================================================================
 
-    # Disable Windows Game DVR / app capture. Keep Game Bar/Xbox protocol
-    # packages installed but dormant; do not alter URI handlers or servicing.
-    Set-RegistryDword `
-        -Path 'HKCU:\System\GameConfigStore' `
-        -Name 'GameDVR_Enabled' `
-        -Value 0
-
-    Set-RegistryDword `
-        -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR' `
-        -Name 'AppCaptureEnabled' `
-        -Value 0
-
-    # Disable Game Bar activation and controller trigger.
-    Set-RegistryDword `
-        -Path 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR' `
-        -Name 'VKMToggleGameBar' `
-        -Value 0
-
-    Set-RegistryDword `
-        -Path 'HKCU:\SOFTWARE\Microsoft\GameBar' `
-        -Name 'UseNexusForGameBarEnabled' `
-        -Value 0
+    # Preserve Windows Game Bar and Game DVR/capture at default or user-selected
+    # state; do not write activation, capture or controller-trigger overrides.
 
     # Intentionally leave Game Mode at Windows default / user-selected state.
 
@@ -1590,7 +1569,7 @@ try {
     # - Defender / Security Center service topology; protection policy is handled by PostFormat-Policy-Baseline-v1.ps1
     # - DiagTrack / Windows Error Reporting service topology; diagnostic data is policy-limited
     # - Compatibility Appraiser / diagnostic / CEIP scheduled-task topology
-    # - BcastDVRUserService service template (capture state disabled above)
+    # - BcastDVRUserService service template and user-selected capture state
     # - SysMain / Prefetch / Memory Compression
     # - Windows Update services / BITS / WaaSMedic / UsoSvc
     # - OneSettings / Services Configuration downloads (Windows dynamic configuration)
